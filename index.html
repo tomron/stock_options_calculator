@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stock Options Calculator</title>
+    <title>🎮 Stock Options Arcade 🚀</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -12,63 +13,126 @@
             box-sizing: border-box;
         }
 
+        @keyframes backgroundScroll {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes neonGlow {
+            0%, 100% { box-shadow: 0 0 5px #ff00ff, 0 0 10px #ff00ff, 0 0 20px #ff00ff, 0 0 40px #ff00ff; }
+            50% { box-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff, 0 0 30px #00ffff, 0 0 50px #00ffff; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(45deg, #1a0033, #330066, #660099, #9900cc);
+            background-size: 400% 400%;
+            animation: backgroundScroll 15s ease infinite;
             min-height: 100vh;
             padding: 20px;
-            color: #333;
+            color: #fff;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255, 0, 255, 0.03) 2px, rgba(255, 0, 255, 0.03) 4px),
+                repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(0, 255, 255, 0.03) 2px, rgba(0, 255, 255, 0.03) 4px);
+            pointer-events: none;
+            z-index: 1;
         }
 
         .container {
             max-width: 1000px;
             margin: 0 auto;
-            background: white;
-            border-radius: 16px;
+            background: rgba(0, 0, 0, 0.85);
+            border-radius: 20px;
             padding: 40px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            box-shadow:
+                0 0 20px rgba(255, 0, 255, 0.5),
+                0 0 40px rgba(0, 255, 255, 0.3),
+                inset 0 0 60px rgba(255, 0, 255, 0.1);
+            border: 3px solid #ff00ff;
+            position: relative;
+            z-index: 2;
         }
 
         h1 {
             text-align: center;
-            color: #667eea;
+            color: #00ffff;
             margin-bottom: 10px;
-            font-size: 2em;
+            font-size: 2.5em;
+            font-family: 'Press Start 2P', cursive;
+            text-shadow:
+                0 0 10px #00ffff,
+                0 0 20px #00ffff,
+                0 0 30px #00ffff,
+                0 0 40px #ff00ff,
+                0 0 70px #ff00ff;
+            animation: float 3s ease-in-out infinite;
         }
 
         .subtitle {
             text-align: center;
-            color: #666;
+            color: #ffff00;
             margin-bottom: 30px;
             font-size: 0.9em;
+            text-shadow: 0 0 10px #ffff00;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.7em;
         }
 
         .tabs {
             display: flex;
-            gap: 10px;
+            gap: 15px;
             margin-bottom: 30px;
-            border-bottom: 2px solid #e0e0e0;
+            border-bottom: none;
+            justify-content: center;
         }
 
         .tab {
-            padding: 12px 24px;
-            background: transparent;
-            border: none;
-            border-bottom: 3px solid transparent;
+            padding: 15px 30px;
+            background: linear-gradient(45deg, #ff00ff, #00ffff);
+            border: 3px solid #ffff00;
+            border-radius: 10px;
             cursor: pointer;
-            font-size: 1em;
-            font-weight: 600;
-            color: #666;
+            font-size: 0.8em;
+            font-weight: 700;
+            font-family: 'Press Start 2P', cursive;
+            color: #000;
             transition: all 0.3s;
+            text-transform: uppercase;
+            box-shadow: 0 5px 15px rgba(255, 0, 255, 0.4);
         }
 
         .tab:hover {
-            color: #667eea;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 0, 255, 0.6);
+            animation: neonGlow 1.5s infinite;
         }
 
         .tab.active {
-            color: #667eea;
-            border-bottom-color: #667eea;
+            background: linear-gradient(45deg, #ffff00, #ff00ff);
+            border-color: #00ffff;
+            animation: pulse 2s infinite;
         }
 
         .tab-content {
@@ -87,22 +151,29 @@
             display: block;
             margin-bottom: 8px;
             font-weight: 600;
-            color: #555;
-            font-size: 0.95em;
+            color: #00ffff;
+            font-size: 0.9em;
+            text-shadow: 0 0 5px #00ffff;
+            text-transform: uppercase;
         }
 
         input[type="number"], input[type="text"], input[type="date"] {
             width: 100%;
             padding: 12px;
-            border: 2px solid #e0e0e0;
+            border: 2px solid #ff00ff;
             border-radius: 8px;
             font-size: 1em;
-            transition: border-color 0.3s;
+            background: rgba(0, 0, 0, 0.5);
+            color: #00ffff;
+            transition: all 0.3s;
+            font-family: 'Courier New', monospace;
         }
 
         input[type="number"]:focus, input[type="text"]:focus, input[type="date"]:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #00ffff;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+            background: rgba(0, 0, 0, 0.7);
         }
 
         .input-group {
@@ -113,40 +184,52 @@
 
         .button {
             width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.1em;
-            font-weight: 600;
+            padding: 18px;
+            background: linear-gradient(45deg, #ff00ff, #00ffff, #ffff00);
+            background-size: 200% 200%;
+            animation: backgroundScroll 3s ease infinite;
+            color: #000;
+            border: 3px solid #ffff00;
+            border-radius: 12px;
+            font-size: 1em;
+            font-weight: 700;
+            font-family: 'Press Start 2P', cursive;
             cursor: pointer;
-            margin-top: 10px;
-            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 20px;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            box-shadow: 0 5px 20px rgba(255, 0, 255, 0.5);
         }
 
         .button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 10px 30px rgba(255, 0, 255, 0.8);
+            animation: neonGlow 1s infinite, backgroundScroll 1s ease infinite;
         }
 
         .results {
             margin-top: 30px;
-            padding: 20px;
-            background: #f8f9fa;
+            padding: 25px;
+            background: rgba(0, 0, 0, 0.6);
             border-radius: 12px;
+            border: 2px solid #ff00ff;
+            box-shadow: 0 0 20px rgba(255, 0, 255, 0.3);
             display: none;
         }
 
         .results.show {
             display: block;
+            animation: pulse 0.5s;
         }
 
         .result-item {
             display: flex;
             justify-content: space-between;
-            padding: 12px 0;
-            border-bottom: 1px solid #e0e0e0;
+            padding: 15px;
+            border-bottom: 2px solid rgba(0, 255, 255, 0.3);
+            background: rgba(255, 0, 255, 0.1);
+            margin-bottom: 10px;
+            border-radius: 8px;
         }
 
         .result-item:last-child {
@@ -155,29 +238,34 @@
 
         .result-label {
             font-weight: 600;
-            color: #555;
+            color: #ffff00;
+            text-shadow: 0 0 5px #ffff00;
         }
 
         .result-value {
             font-weight: 700;
-            color: #667eea;
-            font-size: 1.1em;
+            color: #00ffff;
+            font-size: 1.2em;
+            text-shadow: 0 0 10px #00ffff;
         }
 
         .result-value.positive {
-            color: #10b981;
+            color: #00ff00;
+            text-shadow: 0 0 10px #00ff00;
         }
 
         .result-value.negative {
-            color: #ef4444;
+            color: #ff0000;
+            text-shadow: 0 0 10px #ff0000;
         }
 
         .vesting-info {
             margin-top: 15px;
             padding: 15px;
-            background: white;
+            background: rgba(0, 255, 255, 0.1);
             border-radius: 8px;
-            border-left: 4px solid #667eea;
+            border-left: 4px solid #00ffff;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
         }
 
         .scenarios {
@@ -186,47 +274,60 @@
 
         .scenario-title {
             font-weight: 700;
-            color: #333;
+            color: #ff00ff;
             margin-bottom: 10px;
             font-size: 1.1em;
+            text-shadow: 0 0 10px #ff00ff;
         }
 
         .scenario-item {
             padding: 10px;
             margin-bottom: 8px;
-            background: white;
+            background: rgba(255, 0, 255, 0.1);
             border-radius: 6px;
             display: flex;
             justify-content: space-between;
+            border: 1px solid rgba(255, 0, 255, 0.3);
         }
 
         .help-text {
-            font-size: 0.85em;
-            color: #777;
+            font-size: 0.75em;
+            color: #999;
             margin-top: 4px;
+            font-style: italic;
         }
 
         select {
             width: 100%;
             padding: 12px;
-            border: 2px solid #e0e0e0;
+            border: 2px solid #ff00ff;
             border-radius: 8px;
             font-size: 1em;
-            background: white;
+            background: rgba(0, 0, 0, 0.5);
+            color: #00ffff;
             cursor: pointer;
-            transition: border-color 0.3s;
+            transition: all 0.3s;
+            font-family: 'Courier New', monospace;
         }
 
         select:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #00ffff;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
         }
 
         .chart-container {
             margin-top: 30px;
             padding: 20px;
-            background: #f8f9fa;
+            background: rgba(0, 0, 0, 0.6);
             border-radius: 12px;
+            border: 2px solid #00ffff;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+        }
+
+        .chart-container h3 {
+            color: #ffff00;
+            text-shadow: 0 0 10px #ffff00;
         }
 
         canvas {
@@ -243,27 +344,39 @@
             }
 
             h1 {
-                font-size: 1.5em;
+                font-size: 1.2em;
+            }
+
+            .subtitle {
+                font-size: 0.5em;
             }
 
             .tabs {
                 overflow-x: auto;
+                flex-direction: column;
             }
 
             .tab {
                 white-space: nowrap;
+                font-size: 0.6em;
+                padding: 10px 15px;
+            }
+
+            .button {
+                font-size: 0.7em;
+                padding: 15px;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Stock Options Calculator</h1>
-        <p class="subtitle">Calculate the value of your employee stock options</p>
+        <h1>💰 OPTIONS ARCADE 🚀</h1>
+        <p class="subtitle">LEVEL UP YOUR EQUITY GAME</p>
 
         <div class="tabs">
-            <button class="tab active" onclick="switchTab('simple')">Simple Calculator</button>
-            <button class="tab" onclick="switchTab('vesting')">Vesting Timeline</button>
+            <button class="tab active" onclick="switchTab('simple')">🎯 Quick Play</button>
+            <button class="tab" onclick="switchTab('vesting')">📈 Timeline Mode</button>
         </div>
 
         <div id="simple-tab" class="tab-content active">
