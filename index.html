@@ -335,6 +335,168 @@
             max-height: 400px;
         }
 
+        /* RSU-specific styles */
+        .metric-cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .metric-card {
+            background: rgba(255, 0, 255, 0.1);
+            border: 2px solid #ff00ff;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 0 15px rgba(255, 0, 255, 0.3);
+        }
+
+        .metric-label {
+            color: #ffff00;
+            font-size: 0.7em;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            font-weight: 600;
+            text-shadow: 0 0 5px #ffff00;
+        }
+
+        .metric-value {
+            color: #00ffff;
+            font-size: 1.5em;
+            font-weight: bold;
+            text-shadow: 0 0 10px #00ffff;
+        }
+
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .radio-label {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(255, 0, 255, 0.3);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #00ffff;
+        }
+
+        .radio-label:hover {
+            border-color: #ff00ff;
+            background: rgba(255, 0, 255, 0.1);
+        }
+
+        .radio-label input[type="radio"] {
+            width: auto;
+            margin-right: 10px;
+            accent-color: #ff00ff;
+        }
+
+        .radio-label input[type="radio"]:checked + span {
+            color: #ffff00;
+            font-weight: bold;
+        }
+
+        .tax-breakdown {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #00ffff;
+            margin-bottom: 30px;
+        }
+
+        .tax-item {
+            display: grid;
+            grid-template-columns: 150px 1fr 120px;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+        }
+
+        .tax-item:last-child {
+            border-bottom: none;
+        }
+
+        .tax-item.total {
+            border-top: 2px solid #ffff00;
+            padding-top: 15px;
+            margin-top: 10px;
+        }
+
+        .tax-label {
+            color: #00ffff;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .tax-bar-container {
+            background: rgba(0, 0, 0, 0.5);
+            height: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 0, 255, 0.3);
+        }
+
+        .tax-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #ff00ff, #00ffff);
+            transition: width 0.5s ease;
+            border-radius: 10px;
+        }
+
+        .tax-amount {
+            color: #ffff00;
+            font-weight: bold;
+            text-align: right;
+            text-shadow: 0 0 5px #ffff00;
+        }
+
+        .vesting-schedule {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #ff00ff;
+            margin-top: 30px;
+        }
+
+        .vesting-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .vesting-table th {
+            background: rgba(255, 0, 255, 0.2);
+            color: #ffff00;
+            padding: 12px;
+            text-align: left;
+            font-size: 0.8em;
+            text-transform: uppercase;
+            border: 1px solid rgba(255, 0, 255, 0.3);
+        }
+
+        .vesting-table td {
+            padding: 10px 12px;
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            color: #00ffff;
+            font-size: 0.85em;
+        }
+
+        .vesting-table tr:nth-child(even) {
+            background: rgba(0, 255, 255, 0.05);
+        }
+
+        .vesting-table tr:hover {
+            background: rgba(255, 0, 255, 0.1);
+        }
+
         @media (max-width: 600px) {
             .container {
                 padding: 20px;
@@ -367,6 +529,32 @@
                 font-size: 0.7em;
                 padding: 15px;
             }
+
+            .metric-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .tax-item {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+
+            .tax-bar-container {
+                order: 2;
+            }
+
+            .tax-amount {
+                text-align: left;
+            }
+
+            .vesting-table {
+                font-size: 0.75em;
+            }
+
+            .vesting-table th,
+            .vesting-table td {
+                padding: 8px 6px;
+            }
         }
     </style>
 </head>
@@ -376,8 +564,9 @@
         <p class="subtitle">LEVEL UP YOUR EQUITY GAME</p>
 
         <div class="tabs">
-            <button class="tab active" onclick="switchTab('simple')">🎯 Quick Play</button>
-            <button class="tab" onclick="switchTab('vesting')">📈 Timeline Mode</button>
+            <button class="tab active" onclick="switchTab('simple', event)">🎯 Quick Play</button>
+            <button class="tab" onclick="switchTab('vesting', event)">📈 Timeline Mode</button>
+            <button class="tab" onclick="switchTab('rsu', event)">💎 RSU Mode</button>
         </div>
 
         <div id="simple-tab" class="tab-content active">
@@ -545,6 +734,202 @@
             <div class="chart-container" style="margin-top: 20px;">
                 <h3 style="margin-bottom: 15px; color: #ffff00; text-shadow: 0 0 10px #ffff00; font-family: 'Press Start 2P', cursive; font-size: 0.9em;">Value Over Time</h3>
                 <canvas id="vestingValueChart"></canvas>
+            </div>
+        </div>
+        </div>
+
+        <div id="rsu-tab" class="tab-content">
+        <form id="rsu-form">
+            <div class="form-group">
+                <label for="rsuNumShares">Number of RSUs</label>
+                <input type="number" id="rsuNumShares" min="0" step="1" value="1000" required>
+                <div class="help-text">Total shares granted</div>
+            </div>
+
+            <div class="input-group">
+                <div class="form-group">
+                    <label for="rsuCurrentPrice">Current Stock Price ($)</label>
+                    <input type="number" id="rsuCurrentPrice" min="0" step="0.01" value="100" required>
+                    <div class="help-text">Fair market value per share</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="rsuGrantDate">Grant Date</label>
+                    <input type="date" id="rsuGrantDate" required>
+                    <div class="help-text">Start of vesting</div>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <div class="form-group">
+                    <label for="rsuVestingPeriod">Vesting Period (years)</label>
+                    <select id="rsuVestingPeriod" required>
+                        <option value="1">1 Year</option>
+                        <option value="2">2 Years</option>
+                        <option value="3">3 Years</option>
+                        <option value="4" selected>4 Years</option>
+                        <option value="5">5 Years</option>
+                        <option value="6">6 Years</option>
+                    </select>
+                    <div class="help-text">Total vesting duration</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="rsuCliffPeriod">Cliff Period</label>
+                    <select id="rsuCliffPeriod" required>
+                        <option value="0">None</option>
+                        <option value="0.5">6 Months</option>
+                        <option value="1" selected>1 Year</option>
+                    </select>
+                    <div class="help-text">Time before first vesting</div>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <div class="form-group">
+                    <label for="rsuVestingFrequency">Vesting Frequency</label>
+                    <select id="rsuVestingFrequency" required>
+                        <option value="monthly">Monthly</option>
+                        <option value="quarterly" selected>Quarterly</option>
+                        <option value="semi-annually">Semi-Annually</option>
+                        <option value="annually">Annually</option>
+                    </select>
+                    <div class="help-text">How often RSUs vest</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="rsuVestingPattern">Vesting Pattern</label>
+                    <select id="rsuVestingPattern" required>
+                        <option value="linear" selected>Linear (Equal Yearly)</option>
+                        <option value="backWeighted">Back-Weighted Amazon (5-15-40-40)</option>
+                    </select>
+                    <div class="help-text">Distribution pattern</div>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <div class="form-group">
+                    <label for="rsuFederalTaxRate">Federal Tax Rate (%)</label>
+                    <input type="number" id="rsuFederalTaxRate" min="0" max="100" step="0.1" value="24" required>
+                    <div class="help-text">Your marginal federal tax rate</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="rsuStateTaxRate">State Tax Rate (%)</label>
+                    <input type="number" id="rsuStateTaxRate" min="0" max="100" step="0.1" value="5" required>
+                    <div class="help-text">Your state income tax rate</div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label style="display: flex; align-items: center; cursor: pointer;">
+                    <input type="checkbox" id="rsuIncludeFICA" style="width: auto; margin-right: 10px;">
+                    <span>Include FICA Taxes (Social Security 6.2% + Medicare 1.45%)</span>
+                </label>
+                <div class="help-text">Optional: Add payroll taxes to calculation</div>
+            </div>
+
+            <div class="form-group">
+                <label>Tax Withholding Method</label>
+                <div class="radio-group">
+                    <label class="radio-label">
+                        <input type="radio" name="rsuWithholdingMethod" value="sellToCover" checked>
+                        <span>Sell-to-Cover (Company sells shares to pay taxes)</span>
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="rsuWithholdingMethod" value="cashPayment">
+                        <span>Cash Payment (Pay taxes out of pocket)</span>
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="rsuWithholdingMethod" value="sameDaySale">
+                        <span>Same-Day Sale (Sell all shares immediately)</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="rsuStockGrowth">Expected Stock Growth (%/year)</label>
+                <input type="number" id="rsuStockGrowth" min="-100" max="1000" step="1" value="5">
+                <div class="help-text">Optional: Projected annual growth rate</div>
+            </div>
+
+            <button type="submit" class="button">Calculate RSU Value</button>
+        </form>
+
+        <div id="rsu-results" class="results">
+            <div class="metric-cards">
+                <div class="metric-card">
+                    <div class="metric-label">Total Grant Value</div>
+                    <div class="metric-value" id="rsuTotalValue">$0</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Net Value After Taxes</div>
+                    <div class="metric-value positive" id="rsuNetValue">$0</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Effective Tax Rate</div>
+                    <div class="metric-value" id="rsuEffectiveTaxRate">0%</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Net Shares You Keep</div>
+                    <div class="metric-value" id="rsuNetShares">0</div>
+                </div>
+            </div>
+
+            <div class="tax-breakdown">
+                <h3 style="margin-bottom: 15px; color: #ffff00; text-shadow: 0 0 10px #ffff00; font-family: 'Press Start 2P', cursive; font-size: 0.8em;">Tax Breakdown</h3>
+                <div class="tax-item">
+                    <div class="tax-label">Federal Income Tax</div>
+                    <div class="tax-bar-container">
+                        <div class="tax-bar" id="rsuFederalTaxBar"></div>
+                    </div>
+                    <div class="tax-amount" id="rsuFederalTaxAmount">$0</div>
+                </div>
+                <div class="tax-item">
+                    <div class="tax-label">State Income Tax</div>
+                    <div class="tax-bar-container">
+                        <div class="tax-bar" id="rsuStateTaxBar"></div>
+                    </div>
+                    <div class="tax-amount" id="rsuStateTaxAmount">$0</div>
+                </div>
+                <div class="tax-item" id="rsuSocialSecurityItem" style="display: none;">
+                    <div class="tax-label">Social Security Tax</div>
+                    <div class="tax-bar-container">
+                        <div class="tax-bar" id="rsuSocialSecurityBar"></div>
+                    </div>
+                    <div class="tax-amount" id="rsuSocialSecurityAmount">$0</div>
+                </div>
+                <div class="tax-item" id="rsuMedicareItem" style="display: none;">
+                    <div class="tax-label">Medicare Tax</div>
+                    <div class="tax-bar-container">
+                        <div class="tax-bar" id="rsuMedicareBar"></div>
+                    </div>
+                    <div class="tax-amount" id="rsuMedicareAmount">$0</div>
+                </div>
+                <div class="tax-item total">
+                    <div class="tax-label">Total Tax Withholding</div>
+                    <div class="tax-amount" id="rsuTotalTaxAmount" style="font-weight: bold;">$0</div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <h3 style="margin-bottom: 15px; color: #ffff00; text-shadow: 0 0 10px #ffff00; font-family: 'Press Start 2P', cursive; font-size: 0.9em;">RSU Value Over Time</h3>
+                <canvas id="rsuValueChart"></canvas>
+            </div>
+
+            <div class="chart-container" style="margin-top: 20px;">
+                <h3 style="margin-bottom: 15px; color: #ffff00; text-shadow: 0 0 10px #ffff00; font-family: 'Press Start 2P', cursive; font-size: 0.9em;">Tax Impact</h3>
+                <canvas id="rsuTaxChart"></canvas>
+            </div>
+
+            <div class="chart-container" style="margin-top: 20px;">
+                <h3 style="margin-bottom: 15px; color: #ffff00; text-shadow: 0 0 10px #ffff00; font-family: 'Press Start 2P', cursive; font-size: 0.9em;">Price Scenario Analysis</h3>
+                <canvas id="rsuScenarioChart"></canvas>
+            </div>
+
+            <div class="vesting-schedule">
+                <h3 style="margin-bottom: 15px; color: #ffff00; text-shadow: 0 0 10px #ffff00; font-family: 'Press Start 2P', cursive; font-size: 0.8em;">Vesting Schedule</h3>
+                <div id="rsuVestingTable"></div>
             </div>
         </div>
         </div>
@@ -738,15 +1123,16 @@
         });
 
         // Tab switching
-        function switchTab(tabName) {
+        function switchTab(tabName, evt) {
             // Update tab buttons
             const tabs = document.querySelectorAll('.tab');
             tabs.forEach(tab => tab.classList.remove('active'));
-            event.target.classList.add('active');
+            evt.target.classList.add('active');
 
             // Update tab content
             document.getElementById('simple-tab').classList.remove('active');
             document.getElementById('vesting-tab').classList.remove('active');
+            document.getElementById('rsu-tab').classList.remove('active');
             document.getElementById(tabName + '-tab').classList.add('active');
         }
 
@@ -1039,6 +1425,737 @@
         function formatDate(date) {
             const options = { year: 'numeric', month: 'short' };
             return date.toLocaleDateString('en-US', options);
+        }
+
+        // RSU Calculator
+        // FICA Tax Rates and Limits for Tax Year 2024
+        // IMPORTANT: These values change annually and must be updated each tax year
+        // Source: Social Security Administration (ssa.gov) and IRS
+        // Last updated: January 2024
+        //
+        // NOTE: This calculator assumes single filer status for Medicare thresholds
+        // Actual thresholds: $200K (single), $250K (married filing jointly), $125K (married filing separately)
+        const RSU_TAX_RATES = {
+            SOCIAL_SECURITY: 0.062,        // 6.2% - Employee portion only
+            SS_WAGE_CAP: 168600,           // 2024 wage base limit - indexed annually
+            MEDICARE: 0.0145,              // 1.45% - Employee portion only
+            MEDICARE_ADDITIONAL: 0.009,    // 0.9% - Additional Medicare tax
+            MEDICARE_THRESHOLD: 200000     // Single filer threshold
+        };
+
+        const VESTING_PATTERNS = {
+            linear: [0.25, 0.25, 0.25, 0.25],
+            backWeighted: [0.05, 0.15, 0.40, 0.40]
+        };
+
+        // Set default RSU grant date to today
+        document.getElementById('rsuGrantDate').valueAsDate = new Date();
+
+        let rsuValueChart = null;
+        let rsuTaxChart = null;
+        let rsuScenarioChart = null;
+
+        document.getElementById('rsu-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            calculateRSU();
+        });
+
+        function calculateRSU() {
+            // Validate all required DOM elements exist
+            const requiredElements = [
+                'rsuNumShares', 'rsuCurrentPrice', 'rsuGrantDate', 'rsuVestingPeriod',
+                'rsuCliffPeriod', 'rsuVestingFrequency', 'rsuVestingPattern',
+                'rsuFederalTaxRate', 'rsuStateTaxRate', 'rsuIncludeFICA', 'rsuStockGrowth',
+                'rsuTotalValue', 'rsuNetValue', 'rsuEffectiveTaxRate', 'rsuNetShares'
+            ];
+
+            const missingElements = requiredElements.filter(id => !document.getElementById(id));
+            if (missingElements.length > 0) {
+                console.error('RSU Calculator Error: Missing required DOM elements:', missingElements);
+                alert('Calculator initialization error. Please refresh the page and try again.');
+                return;
+            }
+
+            // Get form values
+            const numShares = parseFloat(document.getElementById('rsuNumShares').value);
+            const currentPrice = parseFloat(document.getElementById('rsuCurrentPrice').value);
+            const grantDateValue = document.getElementById('rsuGrantDate').value;
+            const vestingPeriod = parseFloat(document.getElementById('rsuVestingPeriod').value);
+            const cliffPeriod = parseFloat(document.getElementById('rsuCliffPeriod').value);
+            const frequency = document.getElementById('rsuVestingFrequency').value;
+            const vestingPattern = document.getElementById('rsuVestingPattern').value;
+            const federalRate = parseFloat(document.getElementById('rsuFederalTaxRate').value) / 100;
+            const stateRate = parseFloat(document.getElementById('rsuStateTaxRate').value) / 100;
+            const includeFICA = document.getElementById('rsuIncludeFICA').checked;
+            const stockGrowth = parseFloat(document.getElementById('rsuStockGrowth').value) / 100;
+
+            // Validate grant date
+            if (!grantDateValue) {
+                console.error('RSU Calculator Error: Grant date is required');
+                alert('Please select a grant date');
+                return;
+            }
+
+            const grantDate = new Date(grantDateValue);
+            if (isNaN(grantDate.getTime())) {
+                console.error('RSU Calculator Error: Invalid grant date:', grantDateValue);
+                alert('Please select a valid grant date');
+                return;
+            }
+
+            // Validate withholding method radio button is selected
+            const withholdingMethodElement = document.querySelector('input[name="rsuWithholdingMethod"]:checked');
+            if (!withholdingMethodElement) {
+                console.error('RSU Calculator Error: No withholding method selected');
+                alert('Please select a tax withholding method');
+                return;
+            }
+            const withholdingMethod = withholdingMethodElement.value;
+
+            // Validate all numeric inputs
+            const numericInputs = [
+                { name: 'Number of RSUs', value: numShares, min: 0.01 },
+                { name: 'Stock Price', value: currentPrice, min: 0.01 },
+                { name: 'Vesting Period', value: vestingPeriod, min: 0.01 },
+                { name: 'Cliff Period', value: cliffPeriod, min: 0 },
+                { name: 'Federal Tax Rate', value: federalRate, min: 0, max: 1 },
+                { name: 'State Tax Rate', value: stateRate, min: 0, max: 1 }
+            ];
+
+            for (const input of numericInputs) {
+                if (isNaN(input.value)) {
+                    console.error(`RSU Calculator Error: Invalid ${input.name}:`, input.value);
+                    alert(`Please enter a valid ${input.name}`);
+                    return;
+                }
+                if (input.min !== undefined && input.value < input.min) {
+                    console.error(`RSU Calculator Error: ${input.name} below minimum:`, input.value);
+                    alert(`${input.name} must be at least ${input.min}`);
+                    return;
+                }
+                if (input.max !== undefined && input.value > input.max) {
+                    console.error(`RSU Calculator Error: ${input.name} exceeds maximum:`, input.value);
+                    alert(`${input.name} must be at most ${input.max * 100}%`);
+                    return;
+                }
+            }
+
+            // Generate vesting schedule
+            const vestingSchedule = generateRSUVestingSchedule(
+                numShares, grantDate, vestingPeriod, cliffPeriod, frequency, vestingPattern
+            );
+
+            // Validate schedule is not empty
+            if (!vestingSchedule || vestingSchedule.length === 0) {
+                console.error('RSU Calculator Error: Could not generate vesting schedule');
+                alert('Unable to generate vesting schedule. Please check your vesting parameters.');
+                return;
+            }
+
+            // Calculate total values
+            const totalGrantValue = numShares * currentPrice;
+            const taxes = calculateRSUTaxes(totalGrantValue, federalRate, stateRate, includeFICA);
+            const netValue = totalGrantValue - taxes.totalTax;
+            const effectiveTaxRate = (taxes.totalTax / totalGrantValue) * 100;
+
+            // Calculate net shares based on withholding method
+            let netShares = numShares;
+            if (withholdingMethod === 'sellToCover') {
+                const sharesWithheld = Math.ceil(taxes.totalTax / currentPrice);
+                netShares = numShares - sharesWithheld;
+
+                // Warn if tax rate is so high that net shares would be negative
+                if (netShares < 0) {
+                    console.warn('RSU Calculator Warning: Tax withholding exceeds total shares');
+                    alert('Warning: Your total tax rate exceeds 100%, resulting in more shares withheld than granted. Please review your tax rates.');
+                    netShares = 0; // Cap at zero
+                }
+            } else if (withholdingMethod === 'sameDaySale') {
+                netShares = 0;
+            }
+
+            // Update summary metrics
+            document.getElementById('rsuTotalValue').textContent = formatCurrency(totalGrantValue);
+            document.getElementById('rsuNetValue').textContent = formatCurrency(netValue);
+            document.getElementById('rsuEffectiveTaxRate').textContent = effectiveTaxRate.toFixed(1) + '%';
+            document.getElementById('rsuNetShares').textContent =
+                withholdingMethod === 'sameDaySale'
+                    ? formatCurrency(netValue) + ' (cash)'
+                    : netShares.toLocaleString() + ' shares';
+
+            // Update tax breakdown
+            updateTaxBreakdown(taxes, totalGrantValue, includeFICA);
+
+            // Create charts
+            createRSUValueChart(vestingSchedule, currentPrice, stockGrowth, federalRate, stateRate, includeFICA);
+            createRSUTaxChart(taxes);
+            createRSUScenarioChart(numShares, currentPrice, federalRate, stateRate, includeFICA);
+
+            // Create vesting table
+            createVestingTable(vestingSchedule, currentPrice, federalRate, stateRate, includeFICA, withholdingMethod);
+
+            // Show results
+            document.getElementById('rsu-results').classList.add('show');
+        }
+
+        function calculateRSUTaxes(grossValue, federalRate, stateRate, includeFICA) {
+            const federalTax = grossValue * federalRate;
+            const stateTax = grossValue * stateRate;
+
+            let socialSecurityTax = 0;
+            let medicareTax = 0;
+
+            if (includeFICA) {
+                // Social Security (capped at wage base)
+                const ssBase = Math.min(grossValue, RSU_TAX_RATES.SS_WAGE_CAP);
+                socialSecurityTax = ssBase * RSU_TAX_RATES.SOCIAL_SECURITY;
+
+                // Medicare (with additional tax for high earners)
+                medicareTax = grossValue * RSU_TAX_RATES.MEDICARE;
+                if (grossValue > RSU_TAX_RATES.MEDICARE_THRESHOLD) {
+                    const additionalMedicareBase = grossValue - RSU_TAX_RATES.MEDICARE_THRESHOLD;
+                    medicareTax += additionalMedicareBase * RSU_TAX_RATES.MEDICARE_ADDITIONAL;
+                }
+            }
+
+            const totalTax = federalTax + stateTax + socialSecurityTax + medicareTax;
+
+            return {
+                federalTax,
+                stateTax,
+                socialSecurityTax,
+                medicareTax,
+                totalTax
+            };
+        }
+
+        function generateRSUVestingSchedule(numShares, grantDate, vestingPeriod, cliffPeriod, frequency, pattern) {
+            const schedule = [];
+            const frequencyMonths = {
+                'monthly': 1,
+                'quarterly': 3,
+                'semi-annually': 6,
+                'annually': 12
+            };
+
+            const intervalMonths = frequencyMonths[frequency];
+            const totalMonths = vestingPeriod * 12;
+            const cliffMonths = cliffPeriod * 12;
+
+            // Get vesting pattern percentages
+            const patternPercentages = VESTING_PATTERNS[pattern];
+            const yearsInPeriod = vestingPeriod;
+
+            // Normalize pattern to actual vesting period if needed
+            let yearlyPercentages = [];
+            if (patternPercentages.length === yearsInPeriod) {
+                yearlyPercentages = patternPercentages;
+            } else if (patternPercentages.length === 4 && yearsInPeriod !== 4) {
+                // For linear pattern, distribute evenly
+                const percentPerYear = 1 / yearsInPeriod;
+                for (let i = 0; i < yearsInPeriod; i++) {
+                    yearlyPercentages.push(percentPerYear);
+                }
+            } else {
+                yearlyPercentages = patternPercentages;
+            }
+
+            let cumulativeVested = 0;
+            let currentMonth = cliffMonths > 0 ? cliffMonths : intervalMonths;
+
+            while (currentMonth <= totalMonths) {
+                const yearsElapsed = currentMonth / 12;
+                const currentYear = Math.floor(yearsElapsed);
+                const progressInYear = (yearsElapsed - currentYear);
+
+                // Calculate target vested amount based on pattern
+                let targetVested = 0;
+                for (let y = 0; y < currentYear && y < yearlyPercentages.length; y++) {
+                    targetVested += yearlyPercentages[y];
+                }
+                if (currentYear < yearlyPercentages.length) {
+                    targetVested += yearlyPercentages[currentYear] * progressInYear;
+                }
+
+                targetVested = Math.min(1, targetVested);
+                const targetShares = Math.floor(numShares * targetVested);
+                const vestingShares = targetShares - cumulativeVested;
+
+                if (vestingShares > 0) {
+                    const vestDate = new Date(grantDate);
+                    vestDate.setMonth(vestDate.getMonth() + currentMonth);
+
+                    schedule.push({
+                        date: vestDate,
+                        shares: vestingShares,
+                        cumulativeShares: targetShares,
+                        cumulativePercent: (targetShares / numShares) * 100
+                    });
+
+                    cumulativeVested = targetShares;
+                }
+
+                currentMonth += intervalMonths;
+            }
+
+            // Ensure all shares are vested by the end
+            const totalScheduled = schedule.reduce((sum, event) => sum + event.shares, 0);
+            if (totalScheduled < numShares) {
+                const lastEvent = schedule[schedule.length - 1];
+                if (lastEvent) {
+                    const remaining = numShares - totalScheduled;
+                    lastEvent.shares += remaining;
+                    lastEvent.cumulativeShares += remaining;
+                    lastEvent.cumulativePercent = 100;
+                }
+            }
+
+            return schedule;
+        }
+
+        function updateTaxBreakdown(taxes, totalValue, includeFICA) {
+            const maxTax = taxes.totalTax;
+
+            // Handle zero tax case to avoid division by zero
+            const getBarWidth = (amount) => maxTax > 0 ? ((amount / maxTax) * 100) + '%' : '0%';
+
+            // Federal tax
+            document.getElementById('rsuFederalTaxAmount').textContent = formatCurrency(taxes.federalTax);
+            document.getElementById('rsuFederalTaxBar').style.width = getBarWidth(taxes.federalTax);
+
+            // State tax
+            document.getElementById('rsuStateTaxAmount').textContent = formatCurrency(taxes.stateTax);
+            document.getElementById('rsuStateTaxBar').style.width = getBarWidth(taxes.stateTax);
+
+            // Social Security
+            const ssItem = document.getElementById('rsuSocialSecurityItem');
+            if (includeFICA && taxes.socialSecurityTax > 0) {
+                ssItem.style.display = 'grid';
+                document.getElementById('rsuSocialSecurityAmount').textContent = formatCurrency(taxes.socialSecurityTax);
+                document.getElementById('rsuSocialSecurityBar').style.width = getBarWidth(taxes.socialSecurityTax);
+            } else {
+                ssItem.style.display = 'none';
+            }
+
+            // Medicare
+            const medicareItem = document.getElementById('rsuMedicareItem');
+            if (includeFICA && taxes.medicareTax > 0) {
+                medicareItem.style.display = 'grid';
+                document.getElementById('rsuMedicareAmount').textContent = formatCurrency(taxes.medicareTax);
+                document.getElementById('rsuMedicareBar').style.width = getBarWidth(taxes.medicareTax);
+            } else {
+                medicareItem.style.display = 'none';
+            }
+
+            // Total
+            document.getElementById('rsuTotalTaxAmount').textContent = formatCurrency(taxes.totalTax);
+        }
+
+        function createVestingTable(schedule, currentPrice, federalRate, stateRate, includeFICA, withholdingMethod) {
+            const container = document.getElementById('rsuVestingTable');
+
+            // Clear existing content
+            container.textContent = '';
+
+            const table = document.createElement('table');
+            table.className = 'vesting-table';
+
+            // Create header
+            const thead = document.createElement('thead');
+            const headerRow = document.createElement('tr');
+            const headers = ['Vest Date', 'Shares', 'Cumulative', 'Gross Value', 'Taxes'];
+            if (withholdingMethod === 'sellToCover') {
+                headers.push('Net Shares');
+            } else {
+                headers.push('Net Value');
+            }
+
+            headers.forEach(headerText => {
+                const th = document.createElement('th');
+                th.textContent = headerText;
+                headerRow.appendChild(th);
+            });
+            thead.appendChild(headerRow);
+            table.appendChild(thead);
+
+            // Create body
+            const tbody = document.createElement('tbody');
+            schedule.forEach(event => {
+                const grossValue = event.shares * currentPrice;
+                const taxes = calculateRSUTaxes(grossValue, federalRate, stateRate, includeFICA);
+                const netValue = grossValue - taxes.totalTax;
+                const sharesWithheld = Math.ceil(taxes.totalTax / currentPrice);
+                const netShares = event.shares - sharesWithheld;
+
+                const row = document.createElement('tr');
+
+                const cells = [
+                    formatDate(event.date),
+                    event.shares.toLocaleString(),
+                    event.cumulativeShares.toLocaleString() + ' (' + event.cumulativePercent.toFixed(1) + '%)',
+                    formatCurrency(grossValue),
+                    formatCurrency(taxes.totalTax)
+                ];
+
+                if (withholdingMethod === 'sellToCover') {
+                    cells.push(netShares.toLocaleString());
+                } else if (withholdingMethod === 'sameDaySale') {
+                    cells.push(formatCurrency(netValue));
+                } else {
+                    cells.push(event.shares.toLocaleString());
+                }
+
+                cells.forEach(cellText => {
+                    const td = document.createElement('td');
+                    td.textContent = cellText;
+                    row.appendChild(td);
+                });
+
+                tbody.appendChild(row);
+            });
+            table.appendChild(tbody);
+            container.appendChild(table);
+        }
+
+        function createRSUValueChart(schedule, currentPrice, stockGrowth, federalRate, stateRate, includeFICA) {
+            const chartElement = document.getElementById('rsuValueChart');
+            if (!chartElement) {
+                console.error('RSU Chart Error: Canvas element not found');
+                return;
+            }
+
+            try {
+                const labels = [];
+                const grossValues = [];
+                const netValues = [];
+
+                let cumulativeShares = 0;
+
+                schedule.forEach(event => {
+                    cumulativeShares = event.cumulativeShares;
+                    // Use proper date difference calculation instead of 30-day approximation
+                    const monthsElapsed = (event.date.getFullYear() - schedule[0].date.getFullYear()) * 12
+                        + (event.date.getMonth() - schedule[0].date.getMonth());
+                    const yearsElapsed = monthsElapsed / 12;
+
+                    // Apply stock growth
+                    const projectedPrice = currentPrice * Math.pow(1 + stockGrowth, yearsElapsed);
+                    const grossValue = cumulativeShares * projectedPrice;
+                    const taxes = calculateRSUTaxes(grossValue, federalRate, stateRate, includeFICA);
+                    const netValue = grossValue - taxes.totalTax;
+
+                    labels.push(formatDate(event.date));
+                    grossValues.push(grossValue);
+                    netValues.push(netValue);
+                });
+
+                const ctx = chartElement.getContext('2d');
+                if (!ctx) {
+                    throw new Error('Failed to get canvas context');
+                }
+
+                if (typeof Chart === 'undefined') {
+                    throw new Error('Chart.js library not loaded');
+                }
+
+                if (rsuValueChart) {
+                    rsuValueChart.destroy();
+                }
+
+                rsuValueChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Gross Value',
+                            data: grossValues,
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.2)',
+                            fill: true,
+                            tension: 0.4,
+                            borderWidth: 3
+                        },
+                        {
+                            label: 'Net Value After Taxes',
+                            data: netValues,
+                            borderColor: '#764ba2',
+                            backgroundColor: 'rgba(118, 75, 162, 0.2)',
+                            fill: true,
+                            tension: 0.4,
+                            borderWidth: 3
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + formatCurrency(context.parsed.y);
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Value ($)',
+                                font: {
+                                    weight: 'bold',
+                                    size: 13
+                                }
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString();
+                                }
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Date',
+                                font: {
+                                    weight: 'bold',
+                                    size: 13
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            } catch (error) {
+                console.error('RSU Chart Error:', error);
+                const errorDiv = document.createElement('div');
+                errorDiv.style.cssText = 'color: #ff6b6b; padding: 20px; text-align: center; background: rgba(255, 107, 107, 0.1); border-radius: 10px; margin: 10px 0;';
+                errorDiv.textContent = 'Unable to display chart. Please ensure JavaScript is enabled and try refreshing the page.';
+                chartElement.parentElement.insertBefore(errorDiv, chartElement);
+                chartElement.style.display = 'none';
+            }
+        }
+
+        function createRSUTaxChart(taxes) {
+            const chartElement = document.getElementById('rsuTaxChart');
+            if (!chartElement) {
+                console.error('RSU Tax Chart Error: Canvas element not found');
+                return;
+            }
+
+            try {
+                const ctx = chartElement.getContext('2d');
+                if (!ctx) {
+                    throw new Error('Failed to get canvas context');
+                }
+
+                if (typeof Chart === 'undefined') {
+                    throw new Error('Chart.js library not loaded');
+                }
+
+                if (rsuTaxChart) {
+                    rsuTaxChart.destroy();
+                }
+
+                const labels = [];
+                const data = [];
+                const colors = [];
+
+                if (taxes.federalTax > 0) {
+                    labels.push('Federal Income Tax');
+                    data.push(taxes.federalTax);
+                    colors.push('rgba(255, 0, 255, 0.8)');
+                }
+
+                if (taxes.stateTax > 0) {
+                    labels.push('State Income Tax');
+                    data.push(taxes.stateTax);
+                    colors.push('rgba(0, 255, 255, 0.8)');
+                }
+
+                if (taxes.socialSecurityTax > 0) {
+                    labels.push('Social Security');
+                    data.push(taxes.socialSecurityTax);
+                    colors.push('rgba(255, 255, 0, 0.8)');
+                }
+
+                if (taxes.medicareTax > 0) {
+                    labels.push('Medicare');
+                    data.push(taxes.medicareTax);
+                    colors.push('rgba(0, 255, 0, 0.8)');
+                }
+
+                rsuTaxChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: colors,
+                        borderColor: '#000',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'right',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.parsed || 0;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((value / total) * 100).toFixed(1);
+                                    return label + ': ' + formatCurrency(value) + ' (' + percentage + '%)';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            } catch (error) {
+                console.error('RSU Tax Chart Error:', error);
+                const errorDiv = document.createElement('div');
+                errorDiv.style.cssText = 'color: #ff6b6b; padding: 20px; text-align: center; background: rgba(255, 107, 107, 0.1); border-radius: 10px; margin: 10px 0;';
+                errorDiv.textContent = 'Unable to display tax breakdown chart. Please ensure JavaScript is enabled and try refreshing the page.';
+                chartElement.parentElement.insertBefore(errorDiv, chartElement);
+                chartElement.style.display = 'none';
+            }
+        }
+
+        function createRSUScenarioChart(numShares, currentPrice, federalRate, stateRate, includeFICA) {
+            const chartElement = document.getElementById('rsuScenarioChart');
+            if (!chartElement) {
+                console.error('RSU Scenario Chart Error: Canvas element not found');
+                return;
+            }
+
+            try {
+                const ctx = chartElement.getContext('2d');
+                if (!ctx) {
+                    throw new Error('Failed to get canvas context');
+                }
+
+                if (typeof Chart === 'undefined') {
+                    throw new Error('Chart.js library not loaded');
+                }
+
+                if (rsuScenarioChart) {
+                    rsuScenarioChart.destroy();
+                }
+
+                // Create price scenarios
+                const minPrice = currentPrice * 0.7;
+                const maxPrice = currentPrice * 1.3;
+                const priceStep = (maxPrice - minPrice) / 10;
+
+                const prices = [];
+                const grossValues = [];
+                const netValues = [];
+
+                for (let i = 0; i <= 10; i++) {
+                    const price = minPrice + (priceStep * i);
+                    prices.push('$' + price.toFixed(0));
+
+                    const grossValue = numShares * price;
+                    const taxes = calculateRSUTaxes(grossValue, federalRate, stateRate, includeFICA);
+                    const netValue = grossValue - taxes.totalTax;
+
+                    grossValues.push(grossValue);
+                    netValues.push(netValue);
+                }
+
+                rsuScenarioChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: prices,
+                    datasets: [
+                        {
+                            label: 'Gross Value',
+                            data: grossValues,
+                            backgroundColor: 'rgba(16, 185, 129, 0.6)',
+                            borderColor: '#10b981',
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'Net Value After Taxes',
+                            data: netValues,
+                            backgroundColor: 'rgba(118, 75, 162, 0.6)',
+                            borderColor: '#764ba2',
+                            borderWidth: 2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + formatCurrency(context.parsed.y);
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Value ($)',
+                                font: {
+                                    weight: 'bold',
+                                    size: 13
+                                }
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString();
+                                }
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Stock Price per Share',
+                                font: {
+                                    weight: 'bold',
+                                    size: 13
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            } catch (error) {
+                console.error('RSU Scenario Chart Error:', error);
+                const errorDiv = document.createElement('div');
+                errorDiv.style.cssText = 'color: #ff6b6b; padding: 20px; text-align: center; background: rgba(255, 107, 107, 0.1); border-radius: 10px; margin: 10px 0;';
+                errorDiv.textContent = 'Unable to display price scenario chart. Please ensure JavaScript is enabled and try refreshing the page.';
+                chartElement.parentElement.insertBefore(errorDiv, chartElement);
+                chartElement.style.display = 'none';
+            }
         }
     </script>
 </body>
