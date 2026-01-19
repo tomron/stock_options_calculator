@@ -564,9 +564,9 @@
         <p class="subtitle">LEVEL UP YOUR EQUITY GAME</p>
 
         <div class="tabs">
-            <button class="tab active" onclick="switchTab('simple')">🎯 Quick Play</button>
-            <button class="tab" onclick="switchTab('vesting')">📈 Timeline Mode</button>
-            <button class="tab" onclick="switchTab('rsu')">💎 RSU Mode</button>
+            <button class="tab active" onclick="switchTab('simple', event)">🎯 Quick Play</button>
+            <button class="tab" onclick="switchTab('vesting', event)">📈 Timeline Mode</button>
+            <button class="tab" onclick="switchTab('rsu', event)">💎 RSU Mode</button>
         </div>
 
         <div id="simple-tab" class="tab-content active">
@@ -1123,11 +1123,11 @@
         });
 
         // Tab switching
-        function switchTab(tabName) {
+        function switchTab(tabName, evt) {
             // Update tab buttons
             const tabs = document.querySelectorAll('.tab');
             tabs.forEach(tab => tab.classList.remove('active'));
-            event.target.classList.add('active');
+            evt.target.classList.add('active');
 
             // Update tab content
             document.getElementById('simple-tab').classList.remove('active');
@@ -1428,12 +1428,19 @@
         }
 
         // RSU Calculator
+        // FICA Tax Rates and Limits for Tax Year 2024
+        // IMPORTANT: These values change annually and must be updated each tax year
+        // Source: Social Security Administration (ssa.gov) and IRS
+        // Last updated: January 2024
+        //
+        // NOTE: This calculator assumes single filer status for Medicare thresholds
+        // Actual thresholds: $200K (single), $250K (married filing jointly), $125K (married filing separately)
         const RSU_TAX_RATES = {
-            SOCIAL_SECURITY: 0.062,
-            SS_WAGE_CAP: 168600,
-            MEDICARE: 0.0145,
-            MEDICARE_ADDITIONAL: 0.009,
-            MEDICARE_THRESHOLD: 200000
+            SOCIAL_SECURITY: 0.062,        // 6.2% - Employee portion only
+            SS_WAGE_CAP: 168600,           // 2024 wage base limit - indexed annually
+            MEDICARE: 0.0145,              // 1.45% - Employee portion only
+            MEDICARE_ADDITIONAL: 0.009,    // 0.9% - Additional Medicare tax
+            MEDICARE_THRESHOLD: 200000     // Single filer threshold
         };
 
         const VESTING_PATTERNS = {
@@ -1454,10 +1461,25 @@
         });
 
         function calculateRSU() {
+            // Validate all required DOM elements exist
+            const requiredElements = [
+                'rsuNumShares', 'rsuCurrentPrice', 'rsuGrantDate', 'rsuVestingPeriod',
+                'rsuCliffPeriod', 'rsuVestingFrequency', 'rsuVestingPattern',
+                'rsuFederalTaxRate', 'rsuStateTaxRate', 'rsuIncludeFICA', 'rsuStockGrowth',
+                'rsuTotalValue', 'rsuNetValue', 'rsuEffectiveTaxRate', 'rsuNetShares'
+            ];
+
+            const missingElements = requiredElements.filter(id => !document.getElementById(id));
+            if (missingElements.length > 0) {
+                console.error('RSU Calculator Error: Missing required DOM elements:', missingElements);
+                alert('Calculator initialization error. Please refresh the page and try again.');
+                return;
+            }
+
             // Get form values
             const numShares = parseFloat(document.getElementById('rsuNumShares').value);
             const currentPrice = parseFloat(document.getElementById('rsuCurrentPrice').value);
-            const grantDate = new Date(document.getElementById('rsuGrantDate').value);
+            const grantDateValue = document.getElementById('rsuGrantDate').value;
             const vestingPeriod = parseFloat(document.getElementById('rsuVestingPeriod').value);
             const cliffPeriod = parseFloat(document.getElementById('rsuCliffPeriod').value);
             const frequency = document.getElementById('rsuVestingFrequency').value;
@@ -1465,13 +1487,70 @@
             const federalRate = parseFloat(document.getElementById('rsuFederalTaxRate').value) / 100;
             const stateRate = parseFloat(document.getElementById('rsuStateTaxRate').value) / 100;
             const includeFICA = document.getElementById('rsuIncludeFICA').checked;
-            const withholdingMethod = document.querySelector('input[name="rsuWithholdingMethod"]:checked').value;
             const stockGrowth = parseFloat(document.getElementById('rsuStockGrowth').value) / 100;
+
+            // Validate grant date
+            if (!grantDateValue) {
+                console.error('RSU Calculator Error: Grant date is required');
+                alert('Please select a grant date');
+                return;
+            }
+
+            const grantDate = new Date(grantDateValue);
+            if (isNaN(grantDate.getTime())) {
+                console.error('RSU Calculator Error: Invalid grant date:', grantDateValue);
+                alert('Please select a valid grant date');
+                return;
+            }
+
+            // Validate withholding method radio button is selected
+            const withholdingMethodElement = document.querySelector('input[name="rsuWithholdingMethod"]:checked');
+            if (!withholdingMethodElement) {
+                console.error('RSU Calculator Error: No withholding method selected');
+                alert('Please select a tax withholding method');
+                return;
+            }
+            const withholdingMethod = withholdingMethodElement.value;
+
+            // Validate all numeric inputs
+            const numericInputs = [
+                { name: 'Number of RSUs', value: numShares, min: 0.01 },
+                { name: 'Stock Price', value: currentPrice, min: 0.01 },
+                { name: 'Vesting Period', value: vestingPeriod, min: 0.01 },
+                { name: 'Cliff Period', value: cliffPeriod, min: 0 },
+                { name: 'Federal Tax Rate', value: federalRate, min: 0, max: 1 },
+                { name: 'State Tax Rate', value: stateRate, min: 0, max: 1 }
+            ];
+
+            for (const input of numericInputs) {
+                if (isNaN(input.value)) {
+                    console.error(`RSU Calculator Error: Invalid ${input.name}:`, input.value);
+                    alert(`Please enter a valid ${input.name}`);
+                    return;
+                }
+                if (input.min !== undefined && input.value < input.min) {
+                    console.error(`RSU Calculator Error: ${input.name} below minimum:`, input.value);
+                    alert(`${input.name} must be at least ${input.min}`);
+                    return;
+                }
+                if (input.max !== undefined && input.value > input.max) {
+                    console.error(`RSU Calculator Error: ${input.name} exceeds maximum:`, input.value);
+                    alert(`${input.name} must be at most ${input.max * 100}%`);
+                    return;
+                }
+            }
 
             // Generate vesting schedule
             const vestingSchedule = generateRSUVestingSchedule(
                 numShares, grantDate, vestingPeriod, cliffPeriod, frequency, vestingPattern
             );
+
+            // Validate schedule is not empty
+            if (!vestingSchedule || vestingSchedule.length === 0) {
+                console.error('RSU Calculator Error: Could not generate vesting schedule');
+                alert('Unable to generate vesting schedule. Please check your vesting parameters.');
+                return;
+            }
 
             // Calculate total values
             const totalGrantValue = numShares * currentPrice;
@@ -1484,8 +1563,15 @@
             if (withholdingMethod === 'sellToCover') {
                 const sharesWithheld = Math.ceil(taxes.totalTax / currentPrice);
                 netShares = numShares - sharesWithheld;
+
+                // Warn if tax rate is so high that net shares would be negative
+                if (netShares < 0) {
+                    console.warn('RSU Calculator Warning: Tax withholding exceeds total shares');
+                    alert('Warning: Your total tax rate exceeds 100%, resulting in more shares withheld than granted. Please review your tax rates.');
+                    netShares = 0; // Cap at zero
+                }
             } else if (withholdingMethod === 'sameDaySale') {
-                netShares = 0; // All shares sold
+                netShares = 0;
             }
 
             // Update summary metrics
@@ -1630,20 +1716,23 @@
         function updateTaxBreakdown(taxes, totalValue, includeFICA) {
             const maxTax = taxes.totalTax;
 
+            // Handle zero tax case to avoid division by zero
+            const getBarWidth = (amount) => maxTax > 0 ? ((amount / maxTax) * 100) + '%' : '0%';
+
             // Federal tax
             document.getElementById('rsuFederalTaxAmount').textContent = formatCurrency(taxes.federalTax);
-            document.getElementById('rsuFederalTaxBar').style.width = ((taxes.federalTax / maxTax) * 100) + '%';
+            document.getElementById('rsuFederalTaxBar').style.width = getBarWidth(taxes.federalTax);
 
             // State tax
             document.getElementById('rsuStateTaxAmount').textContent = formatCurrency(taxes.stateTax);
-            document.getElementById('rsuStateTaxBar').style.width = ((taxes.stateTax / maxTax) * 100) + '%';
+            document.getElementById('rsuStateTaxBar').style.width = getBarWidth(taxes.stateTax);
 
             // Social Security
             const ssItem = document.getElementById('rsuSocialSecurityItem');
             if (includeFICA && taxes.socialSecurityTax > 0) {
                 ssItem.style.display = 'grid';
                 document.getElementById('rsuSocialSecurityAmount').textContent = formatCurrency(taxes.socialSecurityTax);
-                document.getElementById('rsuSocialSecurityBar').style.width = ((taxes.socialSecurityTax / maxTax) * 100) + '%';
+                document.getElementById('rsuSocialSecurityBar').style.width = getBarWidth(taxes.socialSecurityTax);
             } else {
                 ssItem.style.display = 'none';
             }
@@ -1653,7 +1742,7 @@
             if (includeFICA && taxes.medicareTax > 0) {
                 medicareItem.style.display = 'grid';
                 document.getElementById('rsuMedicareAmount').textContent = formatCurrency(taxes.medicareTax);
-                document.getElementById('rsuMedicareBar').style.width = ((taxes.medicareTax / maxTax) * 100) + '%';
+                document.getElementById('rsuMedicareBar').style.width = getBarWidth(taxes.medicareTax);
             } else {
                 medicareItem.style.display = 'none';
             }
@@ -1729,35 +1818,51 @@
         }
 
         function createRSUValueChart(schedule, currentPrice, stockGrowth, federalRate, stateRate, includeFICA) {
-            const labels = [];
-            const grossValues = [];
-            const netValues = [];
-
-            let cumulativeShares = 0;
-
-            schedule.forEach(event => {
-                cumulativeShares = event.cumulativeShares;
-                const monthsElapsed = Math.round((event.date - schedule[0].date) / (1000 * 60 * 60 * 24 * 30));
-                const yearsElapsed = monthsElapsed / 12;
-
-                // Apply stock growth
-                const projectedPrice = currentPrice * Math.pow(1 + stockGrowth, yearsElapsed);
-                const grossValue = cumulativeShares * projectedPrice;
-                const taxes = calculateRSUTaxes(grossValue, federalRate, stateRate, includeFICA);
-                const netValue = grossValue - taxes.totalTax;
-
-                labels.push(formatDate(event.date));
-                grossValues.push(grossValue);
-                netValues.push(netValue);
-            });
-
-            const ctx = document.getElementById('rsuValueChart').getContext('2d');
-
-            if (rsuValueChart) {
-                rsuValueChart.destroy();
+            const chartElement = document.getElementById('rsuValueChart');
+            if (!chartElement) {
+                console.error('RSU Chart Error: Canvas element not found');
+                return;
             }
 
-            rsuValueChart = new Chart(ctx, {
+            try {
+                const labels = [];
+                const grossValues = [];
+                const netValues = [];
+
+                let cumulativeShares = 0;
+
+                schedule.forEach(event => {
+                    cumulativeShares = event.cumulativeShares;
+                    // Use proper date difference calculation instead of 30-day approximation
+                    const monthsElapsed = (event.date.getFullYear() - schedule[0].date.getFullYear()) * 12
+                        + (event.date.getMonth() - schedule[0].date.getMonth());
+                    const yearsElapsed = monthsElapsed / 12;
+
+                    // Apply stock growth
+                    const projectedPrice = currentPrice * Math.pow(1 + stockGrowth, yearsElapsed);
+                    const grossValue = cumulativeShares * projectedPrice;
+                    const taxes = calculateRSUTaxes(grossValue, federalRate, stateRate, includeFICA);
+                    const netValue = grossValue - taxes.totalTax;
+
+                    labels.push(formatDate(event.date));
+                    grossValues.push(grossValue);
+                    netValues.push(netValue);
+                });
+
+                const ctx = chartElement.getContext('2d');
+                if (!ctx) {
+                    throw new Error('Failed to get canvas context');
+                }
+
+                if (typeof Chart === 'undefined') {
+                    throw new Error('Chart.js library not loaded');
+                }
+
+                if (rsuValueChart) {
+                    rsuValueChart.destroy();
+                }
+
+                rsuValueChart = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: labels,
@@ -1832,44 +1937,66 @@
                     }
                 }
             });
+            } catch (error) {
+                console.error('RSU Chart Error:', error);
+                const errorDiv = document.createElement('div');
+                errorDiv.style.cssText = 'color: #ff6b6b; padding: 20px; text-align: center; background: rgba(255, 107, 107, 0.1); border-radius: 10px; margin: 10px 0;';
+                errorDiv.textContent = 'Unable to display chart. Please ensure JavaScript is enabled and try refreshing the page.';
+                chartElement.parentElement.insertBefore(errorDiv, chartElement);
+                chartElement.style.display = 'none';
+            }
         }
 
         function createRSUTaxChart(taxes) {
-            const ctx = document.getElementById('rsuTaxChart').getContext('2d');
-
-            if (rsuTaxChart) {
-                rsuTaxChart.destroy();
+            const chartElement = document.getElementById('rsuTaxChart');
+            if (!chartElement) {
+                console.error('RSU Tax Chart Error: Canvas element not found');
+                return;
             }
 
-            const labels = [];
-            const data = [];
-            const colors = [];
+            try {
+                const ctx = chartElement.getContext('2d');
+                if (!ctx) {
+                    throw new Error('Failed to get canvas context');
+                }
 
-            if (taxes.federalTax > 0) {
-                labels.push('Federal Income Tax');
-                data.push(taxes.federalTax);
-                colors.push('rgba(255, 0, 255, 0.8)');
-            }
+                if (typeof Chart === 'undefined') {
+                    throw new Error('Chart.js library not loaded');
+                }
 
-            if (taxes.stateTax > 0) {
-                labels.push('State Income Tax');
-                data.push(taxes.stateTax);
-                colors.push('rgba(0, 255, 255, 0.8)');
-            }
+                if (rsuTaxChart) {
+                    rsuTaxChart.destroy();
+                }
 
-            if (taxes.socialSecurityTax > 0) {
-                labels.push('Social Security');
-                data.push(taxes.socialSecurityTax);
-                colors.push('rgba(255, 255, 0, 0.8)');
-            }
+                const labels = [];
+                const data = [];
+                const colors = [];
 
-            if (taxes.medicareTax > 0) {
-                labels.push('Medicare');
-                data.push(taxes.medicareTax);
-                colors.push('rgba(0, 255, 0, 0.8)');
-            }
+                if (taxes.federalTax > 0) {
+                    labels.push('Federal Income Tax');
+                    data.push(taxes.federalTax);
+                    colors.push('rgba(255, 0, 255, 0.8)');
+                }
 
-            rsuTaxChart = new Chart(ctx, {
+                if (taxes.stateTax > 0) {
+                    labels.push('State Income Tax');
+                    data.push(taxes.stateTax);
+                    colors.push('rgba(0, 255, 255, 0.8)');
+                }
+
+                if (taxes.socialSecurityTax > 0) {
+                    labels.push('Social Security');
+                    data.push(taxes.socialSecurityTax);
+                    colors.push('rgba(255, 255, 0, 0.8)');
+                }
+
+                if (taxes.medicareTax > 0) {
+                    labels.push('Medicare');
+                    data.push(taxes.medicareTax);
+                    colors.push('rgba(0, 255, 0, 0.8)');
+                }
+
+                rsuTaxChart = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
                     labels: labels,
@@ -1902,37 +2029,59 @@
                     }
                 }
             });
+            } catch (error) {
+                console.error('RSU Tax Chart Error:', error);
+                const errorDiv = document.createElement('div');
+                errorDiv.style.cssText = 'color: #ff6b6b; padding: 20px; text-align: center; background: rgba(255, 107, 107, 0.1); border-radius: 10px; margin: 10px 0;';
+                errorDiv.textContent = 'Unable to display tax breakdown chart. Please ensure JavaScript is enabled and try refreshing the page.';
+                chartElement.parentElement.insertBefore(errorDiv, chartElement);
+                chartElement.style.display = 'none';
+            }
         }
 
         function createRSUScenarioChart(numShares, currentPrice, federalRate, stateRate, includeFICA) {
-            const ctx = document.getElementById('rsuScenarioChart').getContext('2d');
-
-            if (rsuScenarioChart) {
-                rsuScenarioChart.destroy();
+            const chartElement = document.getElementById('rsuScenarioChart');
+            if (!chartElement) {
+                console.error('RSU Scenario Chart Error: Canvas element not found');
+                return;
             }
 
-            // Create price scenarios
-            const minPrice = currentPrice * 0.7;
-            const maxPrice = currentPrice * 1.3;
-            const priceStep = (maxPrice - minPrice) / 10;
+            try {
+                const ctx = chartElement.getContext('2d');
+                if (!ctx) {
+                    throw new Error('Failed to get canvas context');
+                }
 
-            const prices = [];
-            const grossValues = [];
-            const netValues = [];
+                if (typeof Chart === 'undefined') {
+                    throw new Error('Chart.js library not loaded');
+                }
 
-            for (let i = 0; i <= 10; i++) {
-                const price = minPrice + (priceStep * i);
-                prices.push('$' + price.toFixed(0));
+                if (rsuScenarioChart) {
+                    rsuScenarioChart.destroy();
+                }
 
-                const grossValue = numShares * price;
-                const taxes = calculateRSUTaxes(grossValue, federalRate, stateRate, includeFICA);
-                const netValue = grossValue - taxes.totalTax;
+                // Create price scenarios
+                const minPrice = currentPrice * 0.7;
+                const maxPrice = currentPrice * 1.3;
+                const priceStep = (maxPrice - minPrice) / 10;
 
-                grossValues.push(grossValue);
-                netValues.push(netValue);
-            }
+                const prices = [];
+                const grossValues = [];
+                const netValues = [];
 
-            rsuScenarioChart = new Chart(ctx, {
+                for (let i = 0; i <= 10; i++) {
+                    const price = minPrice + (priceStep * i);
+                    prices.push('$' + price.toFixed(0));
+
+                    const grossValue = numShares * price;
+                    const taxes = calculateRSUTaxes(grossValue, federalRate, stateRate, includeFICA);
+                    const netValue = grossValue - taxes.totalTax;
+
+                    grossValues.push(grossValue);
+                    netValues.push(netValue);
+                }
+
+                rsuScenarioChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: prices,
@@ -1999,6 +2148,14 @@
                     }
                 }
             });
+            } catch (error) {
+                console.error('RSU Scenario Chart Error:', error);
+                const errorDiv = document.createElement('div');
+                errorDiv.style.cssText = 'color: #ff6b6b; padding: 20px; text-align: center; background: rgba(255, 107, 107, 0.1); border-radius: 10px; margin: 10px 0;';
+                errorDiv.textContent = 'Unable to display price scenario chart. Please ensure JavaScript is enabled and try refreshing the page.';
+                chartElement.parentElement.insertBefore(errorDiv, chartElement);
+                chartElement.style.display = 'none';
+            }
         }
     </script>
 </body>
