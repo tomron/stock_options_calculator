@@ -3,137 +3,273 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎮 Stock Options Arcade 🚀</title>
+    <title>Stock Options Calculator</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📈</text></svg>">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
     <style>
+        /* CSS Variables for Design Tokens */
+        :root {
+            /* Light mode colors */
+            --color-bg-base: #FFFFFF;
+            --color-bg-elevated: #FAFAFA;
+            --color-bg-input: #FFFFFF;
+            --color-text-primary: #18181B;
+            --color-text-secondary: #52525B;
+            --color-text-tertiary: #A1A1AA;
+            --color-border: #E4E4E7;
+            --color-border-hover: #D4D4D8;
+            --color-accent-primary: #0D9488;
+            --color-accent-hover: #0F766E;
+            --color-accent-light: #F0FDFA;
+            --color-success: #16A34A;
+            --color-success-light: #DCFCE7;
+            --color-error: #DC2626;
+            --color-error-light: #FEE2E2;
+            --color-shadow: rgba(0, 0, 0, 0.1);
+            --color-shadow-hover: rgba(0, 0, 0, 0.15);
+
+            /* Typography */
+            --font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            --font-family-mono: 'SF Mono', Monaco, 'Cascadia Code', 'Courier New', monospace;
+            --font-size-xs: 0.75rem;
+            --font-size-sm: 0.875rem;
+            --font-size-base: 1rem;
+            --font-size-lg: 1.125rem;
+            --font-size-xl: 1.25rem;
+            --font-size-2xl: 1.5rem;
+            --font-size-3xl: 1.875rem;
+            --font-weight-normal: 400;
+            --font-weight-medium: 500;
+            --font-weight-semibold: 600;
+            --font-weight-bold: 700;
+            --line-height-tight: 1.25;
+            --line-height-normal: 1.5;
+            --line-height-relaxed: 1.75;
+
+            /* Spacing */
+            --space-1: 4px;
+            --space-2: 8px;
+            --space-3: 12px;
+            --space-4: 16px;
+            --space-5: 20px;
+            --space-6: 24px;
+            --space-8: 32px;
+            --space-10: 40px;
+            --space-12: 48px;
+            --space-16: 64px;
+
+            /* Border radius */
+            --radius-sm: 6px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+
+            /* Shadows */
+            --shadow-sm: 0 1px 2px 0 var(--color-shadow);
+            --shadow-md: 0 4px 6px -1px var(--color-shadow);
+            --shadow-lg: 0 10px 15px -3px var(--color-shadow);
+            --shadow-xl: 0 20px 25px -5px var(--color-shadow);
+
+            /* Transitions */
+            --transition-fast: 150ms ease;
+            --transition-base: 200ms ease;
+            --transition-slow: 300ms ease;
+        }
+
+        /* Dark mode colors */
+        [data-theme="dark"] {
+            --color-bg-base: #09090B;
+            --color-bg-elevated: #18181B;
+            --color-bg-input: #27272A;
+            --color-text-primary: #FAFAFA;
+            --color-text-secondary: #A1A1AA;
+            --color-text-tertiary: #71717A;
+            --color-border: #27272A;
+            --color-border-hover: #3F3F46;
+            --color-accent-primary: #2DD4BF;
+            --color-accent-hover: #5EEAD4;
+            --color-accent-light: #134E4A;
+            --color-success: #4ADE80;
+            --color-success-light: #14532D;
+            --color-error: #F87171;
+            --color-error-light: #7F1D1D;
+            --color-shadow: rgba(0, 0, 0, 0.5);
+            --color-shadow-hover: rgba(0, 0, 0, 0.7);
+        }
+
+        /* Reset */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
-        @keyframes backgroundScroll {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        @keyframes neonGlow {
-            0%, 100% { box-shadow: 0 0 5px #ff00ff, 0 0 10px #ff00ff, 0 0 20px #ff00ff, 0 0 40px #ff00ff; }
-            50% { box-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff, 0 0 30px #00ffff, 0 0 50px #00ffff; }
+        /* Reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
         }
 
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
+        /* Base styles */
+        html {
+            font-size: 16px;
         }
 
         body {
-            font-family: 'Courier New', monospace;
-            background: linear-gradient(45deg, #1a0033, #330066, #660099, #9900cc);
-            background-size: 400% 400%;
-            animation: backgroundScroll 15s ease infinite;
+            font-family: var(--font-family-base);
+            background: var(--color-bg-base);
+            color: var(--color-text-secondary);
+            line-height: var(--line-height-normal);
             min-height: 100vh;
-            padding: 20px;
-            color: #fff;
-            position: relative;
-            overflow-x: hidden;
+            padding: var(--space-6);
+            transition: background-color var(--transition-base), color var(--transition-base);
         }
 
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
+        /* Screen reader only content */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+
+        /* Skip link for accessibility */
+        .skip-link {
+            position: absolute;
+            top: -40px;
             left: 0;
-            width: 100%;
-            height: 100%;
-            background:
-                repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255, 0, 255, 0.03) 2px, rgba(255, 0, 255, 0.03) 4px),
-                repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(0, 255, 255, 0.03) 2px, rgba(0, 255, 255, 0.03) 4px);
-            pointer-events: none;
-            z-index: 1;
+            background: var(--color-accent-primary);
+            color: white;
+            padding: var(--space-2) var(--space-4);
+            text-decoration: none;
+            border-radius: var(--radius-md);
+            z-index: 100;
         }
 
+        .skip-link:focus {
+            top: var(--space-2);
+            left: var(--space-2);
+        }
+
+        /* Container */
         .container {
             max-width: 1000px;
             margin: 0 auto;
-            background: rgba(0, 0, 0, 0.85);
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow:
-                0 0 20px rgba(255, 0, 255, 0.5),
-                0 0 40px rgba(0, 255, 255, 0.3),
-                inset 0 0 60px rgba(255, 0, 255, 0.1);
-            border: 3px solid #ff00ff;
+            background: var(--color-bg-elevated);
+            border-radius: var(--radius-xl);
+            padding: var(--space-10);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--color-border);
             position: relative;
-            z-index: 2;
         }
 
+        /* Theme toggle button */
+        .theme-toggle {
+            position: absolute;
+            top: var(--space-4);
+            right: var(--space-4);
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--color-border);
+            background: var(--color-bg-base);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-base);
+            font-size: var(--font-size-lg);
+        }
+
+        .theme-toggle:hover {
+            background: var(--color-accent-light);
+            border-color: var(--color-accent-primary);
+        }
+
+        .theme-toggle:focus-visible {
+            outline: 2px solid var(--color-accent-primary);
+            outline-offset: 2px;
+        }
+
+        /* Typography */
         h1 {
             text-align: center;
-            color: #00ffff;
-            margin-bottom: 10px;
-            font-size: 2.5em;
-            font-family: 'Press Start 2P', cursive;
-            text-shadow:
-                0 0 10px #00ffff,
-                0 0 20px #00ffff,
-                0 0 30px #00ffff,
-                0 0 40px #ff00ff,
-                0 0 70px #ff00ff;
-            animation: float 3s ease-in-out infinite;
+            color: var(--color-text-primary);
+            margin-bottom: var(--space-2);
+            font-size: var(--font-size-3xl);
+            font-weight: var(--font-weight-bold);
+            line-height: var(--line-height-tight);
         }
 
         .subtitle {
             text-align: center;
-            color: #ffff00;
-            margin-bottom: 30px;
-            font-size: 0.9em;
-            text-shadow: 0 0 10px #ffff00;
-            font-family: 'Press Start 2P', cursive;
-            font-size: 0.7em;
+            color: var(--color-text-tertiary);
+            margin-bottom: var(--space-8);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
         }
 
+        /* Tabs */
         .tabs {
             display: flex;
-            gap: 15px;
-            margin-bottom: 30px;
-            border-bottom: none;
+            gap: var(--space-2);
+            margin-bottom: var(--space-8);
+            border-bottom: 2px solid var(--color-border);
             justify-content: center;
+            role: tablist;
         }
 
         .tab {
-            padding: 15px 30px;
-            background: linear-gradient(45deg, #ff00ff, #00ffff);
-            border: 3px solid #ffff00;
-            border-radius: 10px;
+            padding: var(--space-3) var(--space-6);
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
             cursor: pointer;
-            font-size: 0.8em;
-            font-weight: 700;
-            font-family: 'Press Start 2P', cursive;
-            color: #000;
-            transition: all 0.3s;
-            text-transform: uppercase;
-            box-shadow: 0 5px 15px rgba(255, 0, 255, 0.4);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-secondary);
+            transition: all var(--transition-base);
+            position: relative;
         }
 
         .tab:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(255, 0, 255, 0.6);
-            animation: neonGlow 1.5s infinite;
+            color: var(--color-text-primary);
+            background: var(--color-accent-light);
+        }
+
+        .tab:focus-visible {
+            outline: 2px solid var(--color-accent-primary);
+            outline-offset: 2px;
+            border-radius: var(--radius-sm);
         }
 
         .tab.active {
-            background: linear-gradient(45deg, #ffff00, #ff00ff);
-            border-color: #00ffff;
-            animation: pulse 2s infinite;
+            color: var(--color-accent-primary);
+            border-bottom-color: var(--color-accent-primary);
         }
 
         .tab-content {
@@ -144,200 +280,180 @@
             display: block;
         }
 
+        /* Forms */
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: var(--space-5);
         }
 
         label {
             display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #00ffff;
-            font-size: 0.9em;
-            text-shadow: 0 0 5px #00ffff;
-            text-transform: uppercase;
+            margin-bottom: var(--space-2);
+            font-weight: var(--font-weight-medium);
+            color: var(--color-text-primary);
+            font-size: var(--font-size-sm);
         }
 
-        input[type="number"], input[type="text"], input[type="date"] {
+        input[type="number"],
+        input[type="text"],
+        input[type="date"],
+        select {
             width: 100%;
-            padding: 12px;
-            border: 2px solid #ff00ff;
-            border-radius: 8px;
-            font-size: 1em;
-            background: rgba(0, 0, 0, 0.5);
-            color: #00ffff;
-            transition: all 0.3s;
-            font-family: 'Courier New', monospace;
+            padding: var(--space-3);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            font-size: var(--font-size-base);
+            background: var(--color-bg-input);
+            color: var(--color-text-primary);
+            transition: all var(--transition-base);
+            font-family: var(--font-family-base);
         }
 
-        input[type="number"]:focus, input[type="text"]:focus, input[type="date"]:focus {
-            outline: none;
-            border-color: #00ffff;
-            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
-            background: rgba(0, 0, 0, 0.7);
+        input[type="number"]:hover,
+        input[type="text"]:hover,
+        input[type="date"]:hover,
+        select:hover {
+            border-color: var(--color-border-hover);
+        }
+
+        input[type="number"]:focus-visible,
+        input[type="text"]:focus-visible,
+        input[type="date"]:focus-visible,
+        select:focus-visible {
+            outline: 2px solid var(--color-accent-primary);
+            outline-offset: 2px;
+            border-color: var(--color-accent-primary);
         }
 
         .input-group {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 20px;
+            gap: var(--space-5);
         }
 
+        .help-text {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-tertiary);
+            margin-top: var(--space-1);
+            font-style: normal;
+        }
+
+        select {
+            cursor: pointer;
+        }
+
+        /* Button */
         .button {
             width: 100%;
-            padding: 18px;
-            background: linear-gradient(45deg, #ff00ff, #00ffff, #ffff00);
-            background-size: 200% 200%;
-            animation: backgroundScroll 3s ease infinite;
-            color: #000;
-            border: 3px solid #ffff00;
-            border-radius: 12px;
-            font-size: 1em;
-            font-weight: 700;
-            font-family: 'Press Start 2P', cursive;
+            padding: var(--space-4);
+            background: var(--color-accent-primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-semibold);
             cursor: pointer;
-            margin-top: 20px;
-            transition: all 0.3s;
-            text-transform: uppercase;
-            box-shadow: 0 5px 20px rgba(255, 0, 255, 0.5);
+            margin-top: var(--space-5);
+            transition: all var(--transition-base);
+            font-family: var(--font-family-base);
         }
 
         .button:hover {
-            transform: translateY(-5px) scale(1.02);
-            box-shadow: 0 10px 30px rgba(255, 0, 255, 0.8);
-            animation: neonGlow 1s infinite, backgroundScroll 1s ease infinite;
+            background: var(--color-accent-hover);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
         }
 
+        .button:active {
+            transform: translateY(0);
+        }
+
+        .button:focus-visible {
+            outline: 2px solid var(--color-accent-primary);
+            outline-offset: 2px;
+        }
+
+        /* Results */
         .results {
-            margin-top: 30px;
-            padding: 25px;
-            background: rgba(0, 0, 0, 0.6);
-            border-radius: 12px;
-            border: 2px solid #ff00ff;
-            box-shadow: 0 0 20px rgba(255, 0, 255, 0.3);
+            margin-top: var(--space-8);
+            padding: var(--space-6);
+            background: var(--color-bg-base);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--color-border);
             display: none;
         }
 
         .results.show {
             display: block;
-            animation: pulse 0.5s;
+            animation: fadeIn 0.3s ease;
         }
 
         .result-item {
             display: flex;
             justify-content: space-between;
-            padding: 15px;
-            border-bottom: 2px solid rgba(0, 255, 255, 0.3);
-            background: rgba(255, 0, 255, 0.1);
-            margin-bottom: 10px;
-            border-radius: 8px;
+            align-items: center;
+            padding: var(--space-4);
+            border-bottom: 1px solid var(--color-border);
+            margin-bottom: var(--space-2);
         }
 
         .result-item:last-child {
             border-bottom: none;
+            margin-bottom: 0;
         }
 
         .result-label {
-            font-weight: 600;
-            color: #ffff00;
-            text-shadow: 0 0 5px #ffff00;
+            font-weight: var(--font-weight-medium);
+            color: var(--color-text-secondary);
+            font-size: var(--font-size-sm);
         }
 
         .result-value {
-            font-weight: 700;
-            color: #00ffff;
-            font-size: 1.2em;
-            text-shadow: 0 0 10px #00ffff;
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-primary);
+            font-size: var(--font-size-lg);
+            font-family: var(--font-family-mono);
         }
 
         .result-value.positive {
-            color: #00ff00;
-            text-shadow: 0 0 10px #00ff00;
+            color: var(--color-success);
         }
 
         .result-value.negative {
-            color: #ff0000;
-            text-shadow: 0 0 10px #ff0000;
+            color: var(--color-error);
         }
 
         .vesting-info {
-            margin-top: 15px;
-            padding: 15px;
-            background: rgba(0, 255, 255, 0.1);
-            border-radius: 8px;
-            border-left: 4px solid #00ffff;
-            box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+            margin-top: var(--space-4);
+            padding: var(--space-4);
+            background: var(--color-accent-light);
+            border-radius: var(--radius-md);
+            border-left: 3px solid var(--color-accent-primary);
         }
 
-        .scenarios {
-            margin-top: 20px;
-        }
-
-        .scenario-title {
-            font-weight: 700;
-            color: #ff00ff;
-            margin-bottom: 10px;
-            font-size: 1.1em;
-            text-shadow: 0 0 10px #ff00ff;
-        }
-
-        .scenario-item {
-            padding: 10px;
-            margin-bottom: 8px;
-            background: rgba(255, 0, 255, 0.1);
-            border-radius: 6px;
-            display: flex;
-            justify-content: space-between;
-            border: 1px solid rgba(255, 0, 255, 0.3);
-        }
-
-        .help-text {
-            font-size: 0.75em;
-            color: #999;
-            margin-top: 4px;
-            font-style: italic;
-        }
-
-        select {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #ff00ff;
-            border-radius: 8px;
-            font-size: 1em;
-            background: rgba(0, 0, 0, 0.5);
-            color: #00ffff;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-family: 'Courier New', monospace;
-        }
-
-        select:focus {
-            outline: none;
-            border-color: #00ffff;
-            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
-        }
-
+        /* Charts */
         .chart-container {
-            margin-top: 30px;
-            padding: 20px;
-            background: rgba(0, 0, 0, 0.6);
-            border-radius: 12px;
-            border: 2px solid #00ffff;
-            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+            margin-top: var(--space-8);
+            padding: var(--space-6);
+            background: var(--color-bg-base);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--color-border);
         }
 
         .chart-container h3 {
-            color: #ffff00;
-            text-shadow: 0 0 10px #ffff00;
+            color: var(--color-text-primary);
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-semibold);
+            margin-bottom: var(--space-4);
         }
 
         canvas {
             max-height: 400px;
         }
 
-        @media (max-width: 600px) {
+        /* Responsive Design */
+        @media (max-width: 768px) {
             .container {
-                padding: 20px;
+                padding: var(--space-6);
             }
 
             .input-group {
@@ -345,95 +461,117 @@
             }
 
             h1 {
-                font-size: 1.2em;
+                font-size: var(--font-size-2xl);
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: var(--space-3);
             }
 
-            .subtitle {
-                font-size: 0.5em;
+            .container {
+                padding: var(--space-4);
             }
 
             .tabs {
-                overflow-x: auto;
                 flex-direction: column;
+                border-bottom: none;
             }
 
             .tab {
-                white-space: nowrap;
-                font-size: 0.6em;
-                padding: 10px 15px;
+                border-bottom: 1px solid var(--color-border);
+                margin-bottom: 0;
+                text-align: left;
+                padding: var(--space-3);
             }
 
-            .button {
-                font-size: 0.7em;
-                padding: 15px;
+            .tab.active {
+                border-left: 3px solid var(--color-accent-primary);
+                border-bottom: 1px solid var(--color-border);
+                background: var(--color-accent-light);
+            }
+
+            h1 {
+                font-size: var(--font-size-xl);
+            }
+
+            .subtitle {
+                font-size: var(--font-size-xs);
             }
         }
     </style>
 </head>
 <body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
     <div class="container">
-        <h1>💰 OPTIONS ARCADE 🚀</h1>
-        <p class="subtitle">LEVEL UP YOUR EQUITY GAME</p>
+        <button class="theme-toggle" aria-label="Toggle theme" aria-pressed="false" id="theme-toggle">
+            <span aria-hidden="true">🌙</span>
+        </button>
+        <h1>Stock Options Calculator</h1>
+        <p class="subtitle">Understand the value of your equity compensation</p>
 
-        <div class="tabs">
-            <button class="tab active" onclick="switchTab('simple')">🎯 Quick Play</button>
-            <button class="tab" onclick="switchTab('vesting')">📈 Timeline Mode</button>
+        <div class="tabs" role="tablist">
+            <button class="tab active" role="tab" aria-selected="true" aria-controls="simple-tab" id="simple-tab-btn" tabindex="0" onclick="switchTab('simple', event)">Quick Calculator</button>
+            <button class="tab" role="tab" aria-selected="false" aria-controls="vesting-tab" id="vesting-tab-btn" tabindex="-1" onclick="switchTab('vesting', event)">Vesting Timeline</button>
+            <button class="tab" role="tab" aria-selected="false" aria-controls="rsu-tab" id="rsu-tab-btn" tabindex="-1" onclick="switchTab('rsu', event)">RSU Calculator</button>
         </div>
 
-        <div id="simple-tab" class="tab-content active">
+        <div id="simple-tab" class="tab-content active" role="tabpanel" aria-labelledby="simple-tab-btn">
+        <main id="main-content">
         <form id="calculator-form">
             <div class="form-group">
                 <label for="numOptions">Number of Options Granted</label>
-                <input type="number" id="numOptions" min="0" step="1" value="10000" required>
-                <div class="help-text">Total number of stock options you've been granted</div>
+                <input type="number" id="numOptions" min="0" step="1" value="10000" required aria-describedby="numOptions-help">
+                <div class="help-text" id="numOptions-help">Total number of stock options you've been granted</div>
             </div>
 
             <div class="input-group">
                 <div class="form-group">
                     <label for="strikePrice">Strike Price ($)</label>
-                    <input type="number" id="strikePrice" min="0" step="0.01" value="10" required>
-                    <div class="help-text">Exercise price per share</div>
+                    <input type="number" id="strikePrice" min="0" step="0.01" value="10" required aria-describedby="strikePrice-help">
+                    <div class="help-text" id="strikePrice-help">Exercise price per share</div>
                 </div>
 
                 <div class="form-group">
                     <label for="currentPrice">Current Stock Price ($)</label>
-                    <input type="number" id="currentPrice" min="0" step="0.01" value="50" required>
-                    <div class="help-text">Current fair market value</div>
+                    <input type="number" id="currentPrice" min="0" step="0.01" value="50" required aria-describedby="currentPrice-help">
+                    <div class="help-text" id="currentPrice-help">Current fair market value</div>
                 </div>
             </div>
 
             <div class="input-group">
                 <div class="form-group">
                     <label for="vestedPercentage">Vested Percentage (%)</label>
-                    <input type="number" id="vestedPercentage" min="0" max="100" step="1" value="25" required>
-                    <div class="help-text">Percentage currently vested</div>
+                    <input type="number" id="vestedPercentage" min="0" max="100" step="1" value="25" required aria-describedby="vestedPercentage-help">
+                    <div class="help-text" id="vestedPercentage-help">Percentage currently vested</div>
                 </div>
 
                 <div class="form-group">
                     <label for="taxRate">Tax Rate (%)</label>
-                    <input type="number" id="taxRate" min="0" max="100" step="0.1" value="30" required>
-                    <div class="help-text">Combined federal + state tax rate</div>
+                    <input type="number" id="taxRate" min="0" max="100" step="0.1" value="30" required aria-describedby="taxRate-help">
+                    <div class="help-text" id="taxRate-help">Combined federal + state tax rate</div>
                 </div>
             </div>
 
             <div class="input-group">
                 <div class="form-group">
                     <label for="minExitPrice">Min Exit Price ($)</label>
-                    <input type="number" id="minExitPrice" min="0" step="1" value="25">
-                    <div class="help-text">Minimum price for scenario range</div>
+                    <input type="number" id="minExitPrice" min="0" step="1" value="25" aria-describedby="minExitPrice-help">
+                    <div class="help-text" id="minExitPrice-help">Minimum price for scenario range</div>
                 </div>
 
                 <div class="form-group">
                     <label for="maxExitPrice">Max Exit Price ($)</label>
-                    <input type="number" id="maxExitPrice" min="0" step="1" value="150">
-                    <div class="help-text">Maximum price for scenario range</div>
+                    <input type="number" id="maxExitPrice" min="0" step="1" value="150" aria-describedby="maxExitPrice-help">
+                    <div class="help-text" id="maxExitPrice-help">Maximum price for scenario range</div>
                 </div>
             </div>
 
             <button type="submit" class="button">Calculate Value</button>
         </form>
 
-        <div id="results" class="results">
+        <div id="results" class="results" aria-live="polite">
             <div class="result-item">
                 <span class="result-label">Current Intrinsic Value (All Options)</span>
                 <span class="result-value" id="totalValue">$0</span>
@@ -467,93 +605,338 @@
 
         <div id="simple-chart-results" class="results">
             <div class="chart-container">
-                <h3 style="margin-bottom: 15px; color: #ffff00; text-shadow: 0 0 10px #ffff00; font-family: 'Press Start 2P', cursive; font-size: 0.9em;">Exit Scenario Comparison</h3>
+                <h3>Exit Scenario Comparison</h3>
                 <canvas id="scenarioChart"></canvas>
             </div>
         </div>
+        </main>
         </div>
 
-        <div id="vesting-tab" class="tab-content">
+        <div id="vesting-tab" class="tab-content" role="tabpanel" aria-labelledby="vesting-tab-btn">
         <form id="vesting-form">
             <div class="form-group">
                 <label for="vestNumOptions">Number of Options Granted</label>
-                <input type="number" id="vestNumOptions" min="0" step="1" value="10000" required>
-                <div class="help-text">Total number of stock options you've been granted</div>
+                <input type="number" id="vestNumOptions" min="0" step="1" value="10000" required aria-describedby="vestNumOptions-help">
+                <div class="help-text" id="vestNumOptions-help">Total number of stock options you've been granted</div>
             </div>
 
             <div class="input-group">
                 <div class="form-group">
                     <label for="vestStrikePrice">Strike Price ($)</label>
-                    <input type="number" id="vestStrikePrice" min="0" step="0.01" value="10" required>
-                    <div class="help-text">Exercise price per share</div>
+                    <input type="number" id="vestStrikePrice" min="0" step="0.01" value="10" required aria-describedby="vestStrikePrice-help">
+                    <div class="help-text" id="vestStrikePrice-help">Exercise price per share</div>
                 </div>
 
                 <div class="form-group">
                     <label for="vestCurrentPrice">Current Stock Price ($)</label>
-                    <input type="number" id="vestCurrentPrice" min="0" step="0.01" value="50" required>
-                    <div class="help-text">Current fair market value</div>
+                    <input type="number" id="vestCurrentPrice" min="0" step="0.01" value="50" required aria-describedby="vestCurrentPrice-help">
+                    <div class="help-text" id="vestCurrentPrice-help">Current fair market value</div>
                 </div>
             </div>
 
             <div class="input-group">
                 <div class="form-group">
                     <label for="vestingPeriod">Vesting Period (years)</label>
-                    <input type="number" id="vestingPeriod" min="1" max="10" step="0.5" value="4" required>
-                    <div class="help-text">Total vesting duration</div>
+                    <input type="number" id="vestingPeriod" min="1" max="10" step="0.5" value="4" required aria-describedby="vestingPeriod-help">
+                    <div class="help-text" id="vestingPeriod-help">Total vesting duration</div>
                 </div>
 
                 <div class="form-group">
                     <label for="cliffPeriod">Cliff Period (years)</label>
-                    <input type="number" id="cliffPeriod" min="0" max="5" step="0.25" value="1" required>
-                    <div class="help-text">Time before first vesting</div>
+                    <input type="number" id="cliffPeriod" min="0" max="5" step="0.25" value="1" required aria-describedby="cliffPeriod-help">
+                    <div class="help-text" id="cliffPeriod-help">Time before first vesting</div>
                 </div>
             </div>
 
             <div class="input-group">
                 <div class="form-group">
                     <label for="vestingFrequency">Vesting Frequency</label>
-                    <select id="vestingFrequency" required>
+                    <select id="vestingFrequency" required aria-describedby="vestingFrequency-help">
                         <option value="monthly">Monthly</option>
                         <option value="quarterly">Quarterly</option>
                         <option value="semi-annually">Semi-Annually</option>
                         <option value="annually">Annually</option>
                     </select>
-                    <div class="help-text">How often options vest</div>
+                    <div class="help-text" id="vestingFrequency-help">How often options vest</div>
                 </div>
 
                 <div class="form-group">
                     <label for="vestTaxRate">Tax Rate (%)</label>
-                    <input type="number" id="vestTaxRate" min="0" max="100" step="0.1" value="30" required>
-                    <div class="help-text">Combined federal + state tax rate</div>
+                    <input type="number" id="vestTaxRate" min="0" max="100" step="0.1" value="30" required aria-describedby="vestTaxRate-help">
+                    <div class="help-text" id="vestTaxRate-help">Combined federal + state tax rate</div>
                 </div>
             </div>
 
             <div class="form-group">
                 <label for="grantDate">Grant Date</label>
-                <input type="date" id="grantDate" required>
-                <div class="help-text">When the options were granted</div>
+                <input type="date" id="grantDate" required aria-describedby="grantDate-help">
+                <div class="help-text" id="grantDate-help">When the options were granted</div>
             </div>
 
             <button type="submit" class="button">Generate Vesting Timeline</button>
         </form>
 
-        <div id="vesting-results" class="results">
+        <div id="vesting-results" class="results" aria-live="polite">
             <div class="chart-container">
-                <h3 style="margin-bottom: 15px; color: #ffff00; text-shadow: 0 0 10px #ffff00; font-family: 'Press Start 2P', cursive; font-size: 0.9em;">Vested Options Over Time</h3>
+                <h3>Vested Options Over Time</h3>
                 <canvas id="vestingOptionsChart"></canvas>
             </div>
-            <div class="chart-container" style="margin-top: 20px;">
-                <h3 style="margin-bottom: 15px; color: #ffff00; text-shadow: 0 0 10px #ffff00; font-family: 'Press Start 2P', cursive; font-size: 0.9em;">Value Over Time</h3>
+            <div class="chart-container">
+                <h3>Value Over Time</h3>
                 <canvas id="vestingValueChart"></canvas>
+            </div>
+        </div>
+        </div>
+
+        <div id="rsu-tab" class="tab-content" role="tabpanel" aria-labelledby="rsu-tab-btn">
+        <form id="rsu-form">
+            <div class="form-group">
+                <label for="rsuNumShares">Number of RSUs Granted</label>
+                <input type="number" id="rsuNumShares" min="0" step="1" value="1000" required aria-describedby="rsuNumShares-help">
+                <div class="help-text" id="rsuNumShares-help">Total number of RSUs granted to you</div>
+            </div>
+
+            <div class="input-group">
+                <div class="form-group">
+                    <label for="rsuGrantPrice">Grant Price ($)</label>
+                    <input type="number" id="rsuGrantPrice" min="0" step="0.01" value="100" required aria-describedby="rsuGrantPrice-help">
+                    <div class="help-text" id="rsuGrantPrice-help">Stock price at grant date (for reference)</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="rsuCurrentPrice">Current Stock Price ($)</label>
+                    <input type="number" id="rsuCurrentPrice" min="0" step="0.01" value="150" required aria-describedby="rsuCurrentPrice-help">
+                    <div class="help-text" id="rsuCurrentPrice-help">Current market price per share</div>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <div class="form-group">
+                    <label for="rsuVestedPercentage">Vested Percentage (%)</label>
+                    <input type="number" id="rsuVestedPercentage" min="0" max="100" step="1" value="50" required aria-describedby="rsuVestedPercentage-help">
+                    <div class="help-text" id="rsuVestedPercentage-help">Percentage of RSUs that have vested</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="rsuTaxRate">Tax Rate (%)</label>
+                    <input type="number" id="rsuTaxRate" min="0" max="100" step="0.1" value="40" required aria-describedby="rsuTaxRate-help">
+                    <div class="help-text" id="rsuTaxRate-help">Combined federal + state tax rate (RSUs taxed as income)</div>
+                </div>
+            </div>
+
+            <button type="submit" class="button">Calculate RSU Value</button>
+        </form>
+
+        <div id="rsu-results" class="results" aria-live="polite">
+            <div class="result-item">
+                <span class="result-label">Total RSUs Granted</span>
+                <span class="result-value" id="rsuTotalShares">0</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">Current Total Value</span>
+                <span class="result-value" id="rsuTotalValue">$0</span>
+            </div>
+
+            <div class="vesting-info">
+                <div class="result-item">
+                    <span class="result-label">Vested RSUs</span>
+                    <span class="result-value" id="rsuVestedShares">0</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Unvested RSUs</span>
+                    <span class="result-value" id="rsuUnvestedShares">0</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Vested Value (Before Tax)</span>
+                    <span class="result-value positive" id="rsuVestedValue">$0</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">After-Tax Value (Vested)</span>
+                    <span class="result-value positive" id="rsuAfterTaxValue">$0</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Gain Since Grant</span>
+                    <span class="result-value" id="rsuGain">$0</span>
+                </div>
             </div>
         </div>
         </div>
     </div>
 
     <script>
-        document.getElementById('calculator-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            calculateOptions();
+        // Theme Manager
+        class ThemeManager {
+            constructor() {
+                this.themeToggle = document.getElementById('theme-toggle');
+                this.init();
+            }
+
+            init() {
+                // Check for saved theme preference or default to system preference
+                const savedTheme = localStorage.getItem('theme');
+                const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                const theme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
+
+                this.setTheme(theme, false);
+
+                // Listen for theme toggle
+                this.themeToggle.addEventListener('click', () => this.toggleTheme());
+
+                // Listen for system theme changes
+                window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+                    if (!localStorage.getItem('theme')) {
+                        this.setTheme(e.matches ? 'dark' : 'light', true);
+                    }
+                });
+            }
+
+            setTheme(theme, announce = false) {
+                const icon = this.themeToggle.querySelector('span');
+                if (theme === 'dark') {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                    icon.textContent = '☀️';
+                    this.themeToggle.setAttribute('aria-pressed', 'true');
+                } else {
+                    document.documentElement.removeAttribute('data-theme');
+                    icon.textContent = '🌙';
+                    this.themeToggle.setAttribute('aria-pressed', 'false');
+                }
+
+                // Update charts if they exist
+                this.updateChartColors(theme);
+
+                if (announce) {
+                    this.announceThemeChange(theme);
+                }
+            }
+
+            toggleTheme() {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                this.setTheme(newTheme, true);
+                localStorage.setItem('theme', newTheme);
+            }
+
+            announceThemeChange(theme) {
+                const announcement = document.createElement('div');
+                announcement.setAttribute('role', 'status');
+                announcement.setAttribute('aria-live', 'polite');
+                announcement.className = 'sr-only';
+                announcement.textContent = `Theme changed to ${theme} mode`;
+                document.body.appendChild(announcement);
+                setTimeout(() => announcement.remove(), 1000);
+            }
+
+            updateChartColors(theme) {
+                // Update Chart.js default colors based on theme
+                if (typeof Chart !== 'undefined') {
+                    const isDark = theme === 'dark';
+                    Chart.defaults.color = isDark ? '#A1A1AA' : '#52525B';
+                    Chart.defaults.borderColor = isDark ? '#27272A' : '#E4E4E7';
+
+                    // Update existing charts
+                    if (window.scenarioChart) {
+                        window.scenarioChart.options.scales.x.title.color = isDark ? '#FAFAFA' : '#18181B';
+                        window.scenarioChart.options.scales.y.title.color = isDark ? '#FAFAFA' : '#18181B';
+                        window.scenarioChart.options.scales.x.ticks.color = isDark ? '#A1A1AA' : '#52525B';
+                        window.scenarioChart.options.scales.y.ticks.color = isDark ? '#A1A1AA' : '#52525B';
+                        window.scenarioChart.options.scales.x.grid.color = isDark ? '#27272A' : '#E4E4E7';
+                        window.scenarioChart.options.scales.y.grid.color = isDark ? '#27272A' : '#E4E4E7';
+                        window.scenarioChart.update();
+                    }
+
+                    if (window.vestingOptionsChart) {
+                        window.vestingOptionsChart.options.scales.x.title.color = isDark ? '#FAFAFA' : '#18181B';
+                        window.vestingOptionsChart.options.scales.y.title.color = isDark ? '#FAFAFA' : '#18181B';
+                        window.vestingOptionsChart.options.scales.y1.title.color = isDark ? '#FAFAFA' : '#18181B';
+                        window.vestingOptionsChart.options.scales.x.ticks.color = isDark ? '#A1A1AA' : '#52525B';
+                        window.vestingOptionsChart.options.scales.y.ticks.color = isDark ? '#A1A1AA' : '#52525B';
+                        window.vestingOptionsChart.options.scales.y1.ticks.color = isDark ? '#A1A1AA' : '#52525B';
+                        window.vestingOptionsChart.options.scales.x.grid.color = isDark ? '#27272A' : '#E4E4E7';
+                        window.vestingOptionsChart.options.scales.y.grid.color = isDark ? '#27272A' : '#E4E4E7';
+                        window.vestingOptionsChart.update();
+                    }
+
+                    if (window.vestingValueChart) {
+                        window.vestingValueChart.options.scales.x.title.color = isDark ? '#FAFAFA' : '#18181B';
+                        window.vestingValueChart.options.scales.y.title.color = isDark ? '#FAFAFA' : '#18181B';
+                        window.vestingValueChart.options.scales.x.ticks.color = isDark ? '#A1A1AA' : '#52525B';
+                        window.vestingValueChart.options.scales.y.ticks.color = isDark ? '#A1A1AA' : '#52525B';
+                        window.vestingValueChart.options.scales.x.grid.color = isDark ? '#27272A' : '#E4E4E7';
+                        window.vestingValueChart.options.scales.y.grid.color = isDark ? '#27272A' : '#E4E4E7';
+                        window.vestingValueChart.update();
+                    }
+                }
+            }
+        }
+
+        // Initialize when DOM is ready
+        let themeManager;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize theme manager
+            themeManager = new ThemeManager();
+
+            // Form submission
+            document.getElementById('calculator-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                calculateOptions();
+            });
+
+            // Set default grant date to today
+            document.getElementById('grantDate').valueAsDate = new Date();
+
+            // Vesting form submission
+            document.getElementById('vesting-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                calculateVestingTimeline();
+            });
+
+            // RSU form submission
+            document.getElementById('rsu-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                calculateRSU();
+            });
+
+            // Auto-calculate RSU on input change
+            const rsuInputs = document.querySelectorAll('#rsu-tab input[type="number"]');
+            rsuInputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    if (document.getElementById('rsu-results').classList.contains('show')) {
+                        calculateRSU();
+                    }
+                });
+            });
+
+            // Auto-calculate on input change
+            const inputs = document.querySelectorAll('#simple-tab input[type="number"]');
+            inputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    if (document.getElementById('results').classList.contains('show')) {
+                        calculateOptions();
+                    }
+                });
+            });
+
+            // Keyboard navigation for tabs
+            document.querySelectorAll('.tab').forEach((tab, index, tabs) => {
+                tab.addEventListener('keydown', (e) => {
+                    let newIndex;
+
+                    if (e.key === 'ArrowRight') {
+                        e.preventDefault();
+                        newIndex = (index + 1) % tabs.length;
+                        tabs[newIndex].focus();
+                    } else if (e.key === 'ArrowLeft') {
+                        e.preventDefault();
+                        newIndex = (index - 1 + tabs.length) % tabs.length;
+                        tabs[newIndex].focus();
+                    } else if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        tab.click();
+                    }
+                });
+            });
         });
 
         function calculateOptions() {
@@ -601,8 +984,8 @@
             }).format(value);
         }
 
-        // Scenario chart
-        let scenarioChart = null;
+        // Scenario chart (global for theme updates)
+        window.scenarioChart = null;
 
         function createScenarioChart(minExitPrice, maxExitPrice, strikePrice, currentPrice, vestedOptions, taxRate) {
             // Generate price range with reasonable intervals
@@ -638,11 +1021,11 @@
 
             const ctx = document.getElementById('scenarioChart').getContext('2d');
 
-            if (scenarioChart) {
-                scenarioChart.destroy();
+            if (window.scenarioChart) {
+                window.scenarioChart.destroy();
             }
 
-            scenarioChart = new Chart(ctx, {
+            window.scenarioChart = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: labels,
@@ -727,40 +1110,31 @@
             document.getElementById('simple-chart-results').classList.add('show');
         }
 
-        // Auto-calculate on input change
-        const inputs = document.querySelectorAll('#simple-tab input[type="number"]');
-        inputs.forEach(input => {
-            input.addEventListener('input', function() {
-                if (document.getElementById('results').classList.contains('show')) {
-                    calculateOptions();
-                }
-            });
-        });
-
-        // Tab switching
-        function switchTab(tabName) {
+        // Tab switching with keyboard navigation
+        function switchTab(tabName, event) {
             // Update tab buttons
             const tabs = document.querySelectorAll('.tab');
-            tabs.forEach(tab => tab.classList.remove('active'));
-            event.target.classList.add('active');
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+                tab.setAttribute('aria-selected', 'false');
+                tab.setAttribute('tabindex', '-1');
+            });
+
+            const activeTab = event ? event.target : document.getElementById(tabName + '-tab-btn');
+            activeTab.classList.add('active');
+            activeTab.setAttribute('aria-selected', 'true');
+            activeTab.setAttribute('tabindex', '0');
 
             // Update tab content
             document.getElementById('simple-tab').classList.remove('active');
             document.getElementById('vesting-tab').classList.remove('active');
+            document.getElementById('rsu-tab').classList.remove('active');
             document.getElementById(tabName + '-tab').classList.add('active');
         }
 
-        // Vesting timeline calculator
-        let vestingOptionsChart = null;
-        let vestingValueChart = null;
-
-        // Set default grant date to today
-        document.getElementById('grantDate').valueAsDate = new Date();
-
-        document.getElementById('vesting-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            calculateVestingTimeline();
-        });
+        // Vesting timeline calculator (global for theme updates)
+        window.vestingOptionsChart = null;
+        window.vestingValueChart = null;
 
         function calculateVestingTimeline() {
             const numOptions = parseFloat(document.getElementById('vestNumOptions').value);
@@ -843,11 +1217,11 @@
             // Create first chart - Vested Options
             const optionsCtx = document.getElementById('vestingOptionsChart').getContext('2d');
 
-            if (vestingOptionsChart) {
-                vestingOptionsChart.destroy();
+            if (window.vestingOptionsChart) {
+                window.vestingOptionsChart.destroy();
             }
 
-            vestingOptionsChart = new Chart(optionsCtx, {
+            window.vestingOptionsChart = new Chart(optionsCtx, {
                 type: 'line',
                 data: {
                     labels: labels,
@@ -950,11 +1324,11 @@
             // Create second chart - Dollar Values
             const valueCtx = document.getElementById('vestingValueChart').getContext('2d');
 
-            if (vestingValueChart) {
-                vestingValueChart.destroy();
+            if (window.vestingValueChart) {
+                window.vestingValueChart.destroy();
             }
 
-            vestingValueChart = new Chart(valueCtx, {
+            window.vestingValueChart = new Chart(valueCtx, {
                 type: 'line',
                 data: {
                     labels: labels,
@@ -1039,6 +1413,37 @@
         function formatDate(date) {
             const options = { year: 'numeric', month: 'short' };
             return date.toLocaleDateString('en-US', options);
+        }
+
+        // RSU Calculator
+        function calculateRSU() {
+            const numShares = parseFloat(document.getElementById('rsuNumShares').value);
+            const grantPrice = parseFloat(document.getElementById('rsuGrantPrice').value);
+            const currentPrice = parseFloat(document.getElementById('rsuCurrentPrice').value);
+            const vestedPercentage = parseFloat(document.getElementById('rsuVestedPercentage').value);
+            const taxRate = parseFloat(document.getElementById('rsuTaxRate').value);
+
+            const totalValue = numShares * currentPrice;
+            const vestedShares = Math.floor(numShares * (vestedPercentage / 100));
+            const unvestedShares = numShares - vestedShares;
+            const vestedValue = vestedShares * currentPrice;
+            const afterTaxValue = vestedValue * (1 - taxRate / 100);
+            const gainPerShare = currentPrice - grantPrice;
+            const totalGain = vestedShares * gainPerShare;
+
+            document.getElementById('rsuTotalShares').textContent = numShares.toLocaleString();
+            document.getElementById('rsuTotalValue').textContent = formatCurrency(totalValue);
+            document.getElementById('rsuVestedShares').textContent = vestedShares.toLocaleString();
+            document.getElementById('rsuUnvestedShares').textContent = unvestedShares.toLocaleString();
+            document.getElementById('rsuVestedValue').textContent = formatCurrency(vestedValue);
+            document.getElementById('rsuAfterTaxValue').textContent = formatCurrency(afterTaxValue);
+            document.getElementById('rsuGain').textContent = formatCurrency(totalGain);
+
+            // Set positive/negative class on gain
+            const gainElement = document.getElementById('rsuGain');
+            gainElement.className = 'result-value ' + (totalGain >= 0 ? 'positive' : 'negative');
+
+            document.getElementById('rsu-results').classList.add('show');
         }
     </script>
 </body>
